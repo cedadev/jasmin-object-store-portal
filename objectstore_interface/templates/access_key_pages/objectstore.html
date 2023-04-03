@@ -37,10 +37,10 @@
         {% endif %}
         <td>{{ access_key.lifepoint.split(']')[0].split("[")[1] }}</td>
         <td style="padding-right: 0.6em">
-                <form method="post" action="" class="form-horizontal"  id="delete_{{ access_key.name }}_form">
+                <form method="post" action="" class="form-horizontal"  id="delete_{{ access_key.name }}_form" onsubmit="loading('{{ access_key.name }}')">
                     <div class="form-group" >
                         <input type="hidden" id="delete_{{ access_key.name }}_input" name="delete_access_key" value="{{ access_key.name }}">
-                        <button name="delete_access_key_btn" id="delete_{{ access_key.name }}_btn" {% if access_key.expired %} disabled {% endif %} type="submit" class="btn btn-primary" style="float: right; margin-right: 1.2em;" autocomplete="off">
+                        <button name="delete_access_key_btn" id="delete_{{ access_key.name }}_btn" {% if access_key.expired %} disabled {% endif %} type="submit" class="btn btn-primary" style="float: right; margin-right: 1.2em;" autocomplete="off" onclick="">
                             <i class="fa fa-fw fa-trash"></i> Delete
                         </button>
                     </div>
@@ -51,5 +51,16 @@
   </tbody>
   {% endif %}
 </table>
+
+<script>
+  function loading(element_name){
+    button = document.getElementById("delete_"+element_name+"_btn")
+    console.log(button)
+    button.innerHTML = `
+    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+    </span> Working
+    <span class="sr-only">Loading...</span>`
+  }
+</script>  
 
 {% endblock object_content %}

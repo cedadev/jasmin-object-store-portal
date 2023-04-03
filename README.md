@@ -10,7 +10,8 @@ Built with fast-api.
 `poetry install`
 3. Create a .env file in `objectstore_interface`  
 4. Add your jasmin accounts portal `client_id` and `client_secret` as well as your `scope`
-5. Run  
+5. Add your jasmin projects portal `client_id` and `client_secret` as well as your `scope`
+6. Run  
 ```bash
 cd objectstore_interface/
 poetry run uvicorn main:app --reload

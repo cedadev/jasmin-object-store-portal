@@ -3,11 +3,13 @@ import requests as r
 import random
 import string
 from requests.auth import HTTPBasicAuth
-
+import time
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from authlib.integrations.starlette_client import OAuth
+import  authlib.integrations.httpx_client
 from starlette.config import Config
 from starlette.middleware import Middleware, sessions
 from datetime import datetime
@@ -16,15 +18,25 @@ from custom_middleware import RedirectWhenLoggedOut
 
 env = Config('.env')
 oauth = OAuth()
+TOKEN_ENDPOINT = "https://accounts.jasmin.ac.uk/oauth/token/"
+SCOPES = ["jasmin.projects.services.all:read"]
 oauth.register(
-      name='app',
+      name='accounts',
       server_metadata_url="https://accounts.jasmin.ac.uk/.well-known/openid-configuration/",
-      client_kwargs={"scope": "openid"},
-      client_id=env("client_id"),
-      client_secret=env("client_secret")
+      client_kwargs={"scope": env("accounts_scope")},
+      client_id=env("accounts_client_id"),
+      client_secret=env("accounts_client_secret")
       )
 
-config_url = "https://accounts.jasmin.ac.uk/.well-known/openid-configuration/"
+print(env("projects_scope"))
+projects_portal = authlib.integrations.httpx_client.AsyncOAuth2Client(
+        env("projects_client_id"),
+        env("projects_client_secret"),
+        scope=" ".join(SCOPES),
+        # Don't use verify=False in production!!
+        verify=False,
+    )
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -39,6 +51,8 @@ middleware = [
 ]
 
 app = FastAPI(middleware=middleware)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 async def get_key_list(request: Request, url, auth_access_key) -> r.Response:
       headers = {
@@ -66,24 +80,30 @@ def object_store_list(request: Request):
 
 @app.route("/login/redirect")
 async def login(request: Request) -> RedirectResponse:
-      return await oauth.app.authorize_redirect(
+      return await oauth.accounts.authorize_redirect(
             request,
             "http://127.0.0.1:8000/oauth2/redirect",
       )
 
 @app.route("/oauth2/redirect")
 async def email(request: Request) -> RedirectResponse:
-      request.session["token"] = await oauth.app.authorize_access_token(request)
+      request.session["token"] = await oauth.accounts.authorize_access_token(request)
+      request.session["projects_token"] = await projects_portal.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
       return RedirectResponse("/object-store" )
 
 @app.get("/jasmin")
 async def jasmin(request: Request) -> HTMLResponse:
-      response = await oauth.app.get(f"https://accounts.jasmin.ac.uk/api/v1/", token=request.session["token"])
+      response = await oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/v1/", token=request.session["token"])
       return  JSONResponse(response.json())
 
 @app.get("/jasmin/{endpoint}")
 async def jasmin_endpoint(request: Request, endpoint) -> HTMLResponse:
-      response = await oauth.app.get(f"https://accounts.jasmin.ac.uk/api/v1/{endpoint}/", token=request.session["token"])
+      response = await oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/{endpoint}/", token=request.session["token"])
+      return  JSONResponse(response.json())
+
+@app.get("/jasmin/{endpoint}/{detail}")
+async def jasmin_detail(request: Request, endpoint, detail) -> HTMLResponse:
+      response = await oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/{endpoint}/{detail}/", token=request.session["token"])
       return  JSONResponse(response.json())
 
 @app.get("/object-store/{storename}")
@@ -171,6 +191,7 @@ async def access_key_delete(request: Request, storename: str, delete_access_key:
             if response.status_code != 200:
                   return {"Error": response.content.strip(), "status_code": response.status_code}
 
+            time.sleep(0.25) # Give object store server time to update
             return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       else:
             return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
