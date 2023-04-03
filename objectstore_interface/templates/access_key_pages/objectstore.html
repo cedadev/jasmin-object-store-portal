@@ -1,0 +1,55 @@
+{% extends "access_key_pages/objectbase.html" %}
+
+{% block object_content %}
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+        <th>Access Key</th>
+        <th>Description</th>
+        <th>Created</th>
+        <th>Status</th>
+        <th>Expires</th>
+        <th></th>
+    </tr>
+  </thead>
+  {% if access_keys %}
+    <tbody>
+      {% for access_key in access_keys  %}
+        {% if access_key.expired %}
+          <tr class="danger">
+        {% elif access_key.expiring %}
+          <tr class="warning">
+        {% else %}
+          <tr>
+        {% endif %}
+          <td><code>{{ access_key.name }}</code></td>
+          <td>{{ access_key.x_custom_meta_source }}</td>
+          <td>{{ access_key.last_modified }}</td>
+        {% if access_key.expired %}
+          <td class="text-danger"><i class="fa fa-fw fa-clock-o"></i>
+          <code>EXPIRED</code></td>
+        {% elif access_key.expiring %}
+          <td class="text-warning"><i class="fa fa-fw fa-clock-o"></i>
+          <code>EXPIRING</code></td>
+        {% else %}
+          <td class="text-success"><i class="fa fa-fw fa-check"></i>
+          <code>ACTIVE</code></td>
+        {% endif %}
+        <td>{{ access_key.lifepoint.split(']')[0].split("[")[1] }}</td>
+        <td style="padding-right: 0.6em">
+                <form method="post" action="" class="form-horizontal"  id="delete_{{ access_key.name }}_form">
+                    <div class="form-group" >
+                        <input type="hidden" id="delete_{{ access_key.name }}_input" name="delete_access_key" value="{{ access_key.name }}">
+                        <button name="delete_access_key_btn" id="delete_{{ access_key.name }}_btn" {% if access_key.expired %} disabled {% endif %} type="submit" class="btn btn-primary" style="float: right; margin-right: 1.2em;" autocomplete="off">
+                            <i class="fa fa-fw fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </form>
+            </td>
+        </tr>
+  {% endfor %}
+  </tbody>
+  {% endif %}
+</table>
+
+{% endblock object_content %}

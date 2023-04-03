@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header" id="banner">
+    <div class="row">
+        <div class="col-lg-8 col-md-7 col-sm-6">
+            <h1>{{ storename }}</h1>
+        </div>
+        <div class="col-lg-4 col-md-5 col-sm-6">
+            <div class="sponsor"></div>
+        </div>
+    </div>
+<div>
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item">
+    {% if view == "create" %}
+    <a class="nav-link active" href="/object-store/{{ storename }}/create-keys">Create</a>
+    {% else %}
+    <a class="nav-link" href="/object-store/{{ storename }}/create-keys">Create</a>
+    {% endif %}
+  </li>
+  <li class="nav-item">
+    {% if view == "view" %}
+    <a class="nav-link active" href="/object-store/{{ storename }}/access-keys">View</a>
+    {% else %}
+        <a class="nav-link" href="/object-store/{{ storename }}/access-keys">View</a>
+    {% endif %}
+  </li>
+</ul>
+
+{% block object_content %}
+
+{% endblock object_content %}
+</div>
+{% endblock content %}
