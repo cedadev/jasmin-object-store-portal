@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from authlib.integrations.starlette_client import OAuth
-import  authlib.integrations.httpx_client
+from authlib.integrations.httpx_client import AsyncOAuth2Client, OAuth2Auth
 from starlette.config import Config
 from starlette.middleware import Middleware, sessions
 from datetime import datetime
@@ -29,12 +29,10 @@ oauth.register(
       )
 
 print(env("projects_scope"))
-projects_portal = authlib.integrations.httpx_client.AsyncOAuth2Client(
+projects_portal =  AsyncOAuth2Client(
         env("projects_client_id"),
         env("projects_client_secret"),
         scope=" ".join(SCOPES),
-        # Don't use verify=False in production!!
-        verify=False,
     )
 
 
@@ -75,8 +73,26 @@ def login_splash(request: Request):
       return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/object-store")
-def object_store_list(request: Request):
-      return templates.TemplateResponse("storelist.html", {"request": request})
+async def object_store_list(request: Request):
+      services = await oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/services/", token=request.session["token"])
+      services_json = services.json()
+
+      # Only pull entire list when the user has just logged in or there is a change to the users access permissions.
+      if request.session.get("user_stores") == None or services_json != request.session.get("services_json"):
+            await projects_portal.fetch_token(TOKEN_ENDPOINT)
+            projects = await projects_portal.get(f"https://projects.jasmin.ac.uk/api/services/", headers={"Accept": "application/json"})
+            user_stores = {}
+            for service in projects.json():
+                  for requirement in service["requirements"]:
+                        if requirement["resource"]["name"] == "Caringo Object Store HPOS":
+                              if requirement["location"].split(".")[0] in services_json["object_store"].keys():
+                                    user_stores[requirement["location"].split(".")[0]] = requirement
+
+            request.session["user_stores"] = user_stores
+            request.session["services_json"] = services_json
+      else:
+            user_stores = request.session["user_stores"]
+      return templates.TemplateResponse("storelist.html", {"request": request, "user_stores": user_stores})
 
 @app.route("/login/redirect")
 async def login(request: Request) -> RedirectResponse:
@@ -84,27 +100,6 @@ async def login(request: Request) -> RedirectResponse:
             request,
             "http://127.0.0.1:8000/oauth2/redirect",
       )
-
-@app.route("/oauth2/redirect")
-async def email(request: Request) -> RedirectResponse:
-      request.session["token"] = await oauth.accounts.authorize_access_token(request)
-      request.session["projects_token"] = await projects_portal.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
-      return RedirectResponse("/object-store" )
-
-@app.get("/jasmin")
-async def jasmin(request: Request) -> HTMLResponse:
-      response = await oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/v1/", token=request.session["token"])
-      return  JSONResponse(response.json())
-
-@app.get("/jasmin/{endpoint}")
-async def jasmin_endpoint(request: Request, endpoint) -> HTMLResponse:
-      response = await oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/{endpoint}/", token=request.session["token"])
-      return  JSONResponse(response.json())
-
-@app.get("/jasmin/{endpoint}/{detail}")
-async def jasmin_detail(request: Request, endpoint, detail) -> HTMLResponse:
-      response = await oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/{endpoint}/{detail}/", token=request.session["token"])
-      return  JSONResponse(response.json())
 
 @app.get("/object-store/{storename}")
 async def object_store_verify_password(request: Request, storename):
