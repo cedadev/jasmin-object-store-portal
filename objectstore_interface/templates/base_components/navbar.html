@@ -1,0 +1,54 @@
+<div class="navbar navbar-expand-lg sticky-top navbar-dark bg-success">
+  <div class="container">
+    <a href="/" class="navbar-brand">
+      <img
+        src="https://artefacts.ceda.ac.uk/themes/orgtheme_jasmin/0.6/assets/img/jasmin_logo_white_greendots_h50.png"
+        alt="JASMIN logo"
+      />
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarResponsive"
+      aria-controls="navbarResponsive"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    {% if request.session.get("token") is not none%}
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="/object-store/">Object Stores</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a
+            href="#"
+            class="nav-link dropdown-toggle"
+            data-bs-toggle="dropdown"
+            role="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <i class="fas fa-user"></i>&nbsp; {{
+            request.session.token.userinfo.preferred_username }}
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="/account/logout/"
+                ><i class="fas fa-sign-out-alt fa-fw"></i> Sign out</a
+              >
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</div>

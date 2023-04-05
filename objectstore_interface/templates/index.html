@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-2" id="content-main">
+  <div class="page-header" id="banner">
+    <div class="row">
+      <div class="col-lg-8 col-md-7 col-sm-6">
+        <h1>JASMIN Object Store Portal</h1>
+      </div>
+
+      <div class="col-lg-4 col-md-5 col-sm-6">
+        <div class="sponsor"></div>
+      </div>
+    </div>
+    <div class="row"></div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row justify-content-end border border-primary p-2">
+        <div class="col-lg-7">
+          <p class="lead">Here, you can manage you object store access keys.</p>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-grid gap-2">
+            <a
+              href="/object-store"
+              class="btn btn-primary btn-lg"
+              role="button"
+            >
+              <i class="fas fa-fw fa-server"></i>&nbsp; Object Stores
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
