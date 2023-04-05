@@ -23,7 +23,7 @@
           <tr>
         {% endif %}
           <td><code>{{ access_key.name }}</code></td>
-          <td>{{ access_key.x_custom_meta_source }}</td>
+          <td>{{ access_key.description }}</td>
           <td>{{ access_key.last_modified }}</td>
         {% if access_key.expired %}
           <td class="text-danger"><i class="fa fa-fw fa-clock-o"></i>
@@ -35,7 +35,7 @@
           <td class="text-success"><i class="fa fa-fw fa-check"></i>
           <code>ACTIVE</code></td>
         {% endif %}
-        <td>{{ access_key.lifepoint.split(']')[0].split("[")[1] }}</td>
+        <td>{{ access_key.lifepoint }}</td>
         <td style="padding-right: 0.6em">
                 <form method="post" action="" class="form-horizontal"  id="delete_{{ access_key.name }}_form" onsubmit="loading('{{ access_key.name }}')">
                     <div class="form-group" >
