@@ -26,10 +26,10 @@
           <td>{{ access_key.description }}</td>
           <td>{{ access_key.last_modified }}</td>
         {% if access_key.expired %}
-          <td class="text-danger"><i class="fa fa-fw fa-clock-o"></i>
+          <td class="text-danger"><i class="fa fa-fw fa-clock"></i>
           <code>EXPIRED</code></td>
         {% elif access_key.expiring %}
-          <td class="text-warning"><i class="fa fa-fw fa-clock-o"></i>
+          <td class="text-warning"><i class="fa fa-fw fa-clock"></i>
           <code>EXPIRING</code></td>
         {% else %}
           <td class="text-success"><i class="fa fa-fw fa-check"></i>

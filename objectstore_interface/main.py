@@ -84,10 +84,10 @@ async def object_store_list(request: Request):
             await projects_portal.fetch_token(TOKEN_ENDPOINT)
             projects = await projects_portal.get(f"https://projects.jasmin.ac.uk/api/services/", headers={"Accept": "application/json"})
             user_stores = {}
-            for service in projects.json():
-                  for requirement in service["requirements"]:
-                        if requirement["resource"]["name"] == "Caringo Object Store HPOS":
-                              if requirement["location"].split(".")[0] in services_json["object_store"].keys():
+            for service in projects.json(): #Look at each project
+                  for requirement in service["requirements"]: # Look at the requirements for each project
+                        if requirement["resource"]["name"] == "Caringo Object Store HPOS": #See if they're using datacore (caringo) Add more for different object stores (Create class for them as well)
+                              if requirement["location"].split(".")[0] in services_json["object_store"].keys(): #Check user has access to this object store
                                     user_stores[requirement["location"].split(".")[0]] = {"name": requirement["location"].split(".")[0], "location": requirement["location"]}
                                     request.session[requirement["location"].split(".")[0]] = jsonpickle.encode(DataCore(requirement["location"]))
 
@@ -112,11 +112,9 @@ async def email(request: Request) -> RedirectResponse:
 
 @app.get("/object-store/{storename}")
 async def object_store_verify_password(request: Request, storename):
-      if request.session.get("token") is not None:
-            if request.session.get('access_key_' + str(storename)) is not None:
-                  return RedirectResponse(f"/object-store/{storename}/access-keys")
-            return templates.TemplateResponse("pass.html", {"request": request, "storename": storename})
-      return RedirectResponse("/login")
+      if request.session.get('access_key_' + str(storename)) is not None:
+            return RedirectResponse(f"/object-store/{storename}/access-keys")
+      return templates.TemplateResponse("pass.html", {"request": request, "storename": storename})
 
 @app.post("/object-store/{storename}")
 async def object_store_get_key(request: Request, storename, password: Annotated[str, Form()]) -> HTMLResponse:
@@ -137,8 +135,6 @@ async def object_store_show_details(request: Request, storename: str):
       if not auth_access_key:
             return RedirectResponse(f"/object-store/{storename}")
 
-      # Set the request headers.
-      
       response = await object_store.get_store(request)
 
       if response["status_code"] == 401:
@@ -170,7 +166,6 @@ async def access_key_delete(request: Request, storename: str, delete_access_key:
 
 @app.get("/object-store/{storename}/create-keys")
 async def create_object_store_keys_page(request: Request, storename):
-      object_store_url = f"http://{storename}.s3.jc.rl.ac.uk"
       auth_access_key = request.session.get('access_key_' + str(storename), None)
 
       if not auth_access_key:
@@ -192,6 +187,7 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
                   'secret_key': response["secret_key"],
             }
             request.session['created'] = created
+      time.sleep(0.5)
       return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True})
 
 

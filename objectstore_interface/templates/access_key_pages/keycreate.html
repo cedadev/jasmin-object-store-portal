@@ -2,7 +2,7 @@
 
 {% block object_content %}
 <div class="col-md-8 col-md-offset-2">
-    <form method="POST" action="" class="form-horizontal" id="object-store-form">
+    <form method="POST" action="" class="form-horizontal" id="object-store-form" onsubmit="loading()">
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9 mb-3">
                 <div class="row mb-3">
@@ -17,7 +17,7 @@
                         <input type="date" required="true" class="form-control" name="expires">
                     </div>
                 </div>
-                <button name="submitted" type="submit" class="btn btn-primary" autocomplete="off">Create Access Key</button>
+                <button name="submitted" type="submit" class="btn btn-primary" autocomplete="off" id="create-access-key-btn">Create Access Key</button>
             </div>
         </div>
     </form>
@@ -49,6 +49,16 @@
         var modal = new bootstrap.Modal(document.getElementById("key-creation-content"), {focus: true})
         modal.show()
     </script>
+    <script>
+      function loading(){
+        button = document.getElementById("create-access-key-btn")
+        console.log(button)
+        button.innerHTML = `
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+        </span> Working
+        <span class="sr-only">Loading...</span>`
+      }
+    </script>  
 {% endif %}
 
 {% endblock %}
