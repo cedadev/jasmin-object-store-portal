@@ -2,10 +2,10 @@ import jsonpickle
 
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
-from object_store_classes.datacore import DataCore
-from pages.login_pages import login
+from objectstore_interface.object_store_classes.datacore import DataCore
+from objectstore_interface.pages.login_pages import login
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="objectstore_interface/templates")
 
 router = APIRouter()
 

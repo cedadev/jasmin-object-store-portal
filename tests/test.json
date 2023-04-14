@@ -1,0 +1,26 @@
+{
+  "access_token": "testing",
+  "expires_in": 36000,
+  "token_type": "Bearer",
+  "scope": "openid https://accounts.jasmin.ac.uk/api/services/",
+  "refresh_token": "testing",
+  "id_token": "testing",
+  "expires_at": 1681335829,
+  "userinfo": {
+    "aud": "testing",
+    "iat": "testing",
+    "nonce": "testing",
+    "at_hash": "testing",
+    "sub": "4587",
+    "given_name": "Test",
+    "family_name": "Tester",
+    "name": "Test Tester",
+    "preferred_username": "test",
+    "email": null,
+    "iss": "https://accounts.jasmin.ac.uk",
+    "exp": 1681335826,
+    "auth_time": 1680522173,
+    "jti": "17501146-4b82-447a-8fab-80148045f97d"
+  },
+  "access_key_cedadev-o": "test"
+}

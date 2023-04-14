@@ -24,8 +24,6 @@ class DataCore(ObjectStore):
             headers=headers
         )
 
-        print(response.json())
-
         if response.status_code != 200:
               return self._return_error(response)
         
@@ -73,7 +71,6 @@ class DataCore(ObjectStore):
 
         auth_access_key_name = False
         for auth_access_key in auth_access_keys:
-                print(auth_access_key)
                 lifepoint = datetime.strptime(auth_access_key['lifepoint'].split(']')[0], '[%a, %d %b %Y %H:%M:%S %Z')
                 if lifepoint > datetime.today():
                     auth_access_key_name = auth_access_key['name']
@@ -85,7 +82,7 @@ class DataCore(ObjectStore):
                     'X-Custom-Meta-Source': 'JASMIN account auth access key',
                     'X-User-Token-Expires-Meta': expires.strftime('%Y-%m-%d'),
                 }
-                url = self.location + ':81/.TOKEN/?format=json'
+                url = "http://" + self.location + ':81/.TOKEN/?format=json'
                 response = r.post(
                     url,
                     headers=headers,
@@ -131,6 +128,7 @@ class DataCore(ObjectStore):
         )
 
         response_text = response.text
+        print(response_text)
 
         if response.status_code != 201:
              return self._return_error(response)

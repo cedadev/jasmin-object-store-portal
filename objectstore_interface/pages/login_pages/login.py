@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from starlette.config import Config
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="objectstore_interface/templates")
 
 env = Config('.env')
 oauth = OAuth()

@@ -1,13 +1,13 @@
 import jsonpickle
 import time
 
-from object_store_classes.base import ObjectStore
+from objectstore_interface.object_store_classes.base import ObjectStore
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import Annotated
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="objectstore_interface/templates")
 
 router = APIRouter()
 
