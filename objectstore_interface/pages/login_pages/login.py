@@ -1,28 +1,29 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from starlette.config import Config
+import yaml
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
-env = Config('.env')
+with open("conf/common.secrets.yaml") as confile:
+      config = yaml.safe_load(confile)
 oauth = OAuth()
 TOKEN_ENDPOINT = "https://accounts.jasmin.ac.uk/oauth/token/"
 SCOPES = ["jasmin.projects.services.all:read"]
 oauth.register(
       name='accounts',
       server_metadata_url="https://accounts.jasmin.ac.uk/.well-known/openid-configuration/",
-      client_kwargs={"scope": env("accounts_scope")},
-      client_id=env("accounts_client_id"),
-      client_secret=env("accounts_client_secret")
+      client_kwargs={"scope": config["accounts"]["scope"]},
+      client_id=config["accounts"]["client_id"],
+      client_secret=config["accounts"]["client_secret"]
       )
 
 projects_portal =  AsyncOAuth2Client(
-        env("projects_client_id"),
-        env("projects_client_secret"),
-        scope=" ".join(SCOPES),
+        config["projects"]["client_id"],
+        config["projects"]["client_secret"],
+        scope=config["projects"]["scope"], #" ".join(SCOPES),
 )
 
 router = APIRouter()

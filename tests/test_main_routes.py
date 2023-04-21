@@ -1,6 +1,5 @@
 import pytest
 from fastapi.templating import Jinja2Templates
-from starlette.config import Config
 from objectstore_interface.main import app
 from bs4 import BeautifulSoup
 import tests.conftest
@@ -21,7 +20,6 @@ templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("tests/test.json") as token_json:
     token_str = json.load(token_json)
 token = {"options": {"token": token_str}}
-#session = config("session")
 client = TestClient(app)
 
 #Mock the response from the datacore api

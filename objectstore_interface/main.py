@@ -5,11 +5,12 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware import Middleware, sessions
-from starlette.config import Config
+import yaml
 from objectstore_interface.custom_middleware import RedirectWhenLoggedOut, MockSessionMiddleware
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
-config = Config(".env")
+with open("conf/common.secrets.yaml") as confile:
+      config = yaml.safe_load(confile)
 
 middleware = [
       Middleware(
@@ -21,7 +22,7 @@ middleware = [
       ),
 ]
 
-if config("testing") == "True":
+if config["testing"] == True:
       middleware.insert(1, Middleware(MockSessionMiddleware))
 
 app = FastAPI(middleware=middleware)

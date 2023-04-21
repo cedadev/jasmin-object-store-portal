@@ -1,9 +1,6 @@
-from fastapi.applications import FastAPI, Request
-from fastapi.middleware import Middleware
+from fastapi.applications import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.config import Config
-from starlette.types import ASGIApp
 import json
 
 class RedirectWhenLoggedOut(BaseHTTPMiddleware):
