@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "objectstore_interface"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 fastapi = "^0.95.0"
 authlib = "^1.2.0"
 uvicorn = "^0.21.1"
