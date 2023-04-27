@@ -12,13 +12,17 @@ with open("conf/common.secrets.yaml") as confile:
 oauth = OAuth()
 TOKEN_ENDPOINT = "https://accounts.jasmin.ac.uk/oauth/token/"
 SCOPES = ["jasmin.projects.services.all:read"]
-oauth.register(
-      name='accounts',
-      server_metadata_url="https://accounts.jasmin.ac.uk/.well-known/openid-configuration/",
-      client_kwargs={"scope": config["accounts"]["scope"]},
-      client_id=config["accounts"]["client_id"],
-      client_secret=config["accounts"]["client_secret"]
-      )
+try:
+      oauth.register(
+            name='accounts',
+            server_metadata_url="https://accounts.jasmin.ac.uk/.well-known/openid-configuration/",
+            client_kwargs={"scope": config["accounts"]["scope"]},
+            client_id=config["accounts"]["client_id"],
+            client_secret=config["accounts"]["client_secret"]
+            )
+except KeyError:
+      print(config)
+      exit()
 
 projects_portal =  AsyncOAuth2Client(
         config["projects"]["client_id"],
