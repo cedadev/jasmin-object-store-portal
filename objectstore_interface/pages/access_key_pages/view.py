@@ -16,6 +16,9 @@ async def object_store_show_details(request: Request, storename: str):
       object_store: ObjectStore = jsonpickle.decode(request.session[storename])
       auth_access_key = request.session.get('access_key_' + str(storename), None)
 
+      if request.session.get('created'):
+            request.session.pop('created')
+
       if not auth_access_key:
             return RedirectResponse(f"/object-store/{storename}")
 

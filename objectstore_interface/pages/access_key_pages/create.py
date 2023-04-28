@@ -14,11 +14,14 @@ router = APIRouter()
 @router.get("/object-store/{storename}/create-keys", tags=["create"])
 async def create_object_store_keys_page(request: Request, storename):
       auth_access_key = request.session.get('access_key_' + str(storename), None)
+      created = False
+      if request.session.get('created'):
+            created = True
 
       if not auth_access_key:
             return RedirectResponse(f"/object-store/{storename}")
       
-      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
+      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": created})
 
 @router.post("/object-store/{storename}/create-keys")
 async def create_object_store_keys(request: Request, storename, expires: Annotated[str, Form()], description: Annotated[str, Form()]):
@@ -35,4 +38,5 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
             }
             request.session['created'] = created
       time.sleep(0.5)
-      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True}, status_code=201)
+      return RedirectResponse(f"/object-store/{storename}/create-keys", status_code=303)
+      #return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True}, status_code=201)
