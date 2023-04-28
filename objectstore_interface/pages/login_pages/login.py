@@ -42,7 +42,7 @@ async def login(request: Request) -> RedirectResponse:
       print(f"{request.headers.get(':scheme:', 'http')}://{request.url.hostname}/oauth2/redirect")
       return await oauth.accounts.authorize_redirect(
             request,
-            f"{request.headers.get(':scheme:', 'http')}://{request.url.hostname}/oauth2/redirect",
+            config["accounts"]["redirectUri"],
       )
 
 @router.route("/oauth2/redirect")
