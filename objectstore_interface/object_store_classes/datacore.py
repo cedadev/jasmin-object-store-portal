@@ -128,7 +128,6 @@ class DataCore(ObjectStore):
         )
 
         response_text = response.text
-        print(response_text)
 
         if response.status_code != 201:
              return self._return_error(response)
