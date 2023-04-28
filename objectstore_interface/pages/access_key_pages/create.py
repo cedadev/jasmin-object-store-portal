@@ -23,8 +23,9 @@ async def create_object_store_keys_page(request: Request, storename):
 @router.post("/object-store/{storename}/create-keys")
 async def create_object_store_keys(request: Request, storename, expires: Annotated[str, Form()], description: Annotated[str, Form()]):
       object_store: ObjectStore = jsonpickle.decode(request.session[storename])
-      
+
       response = await object_store.create_key(description, expires)
+      print(response["status_code"])
       if response["status_code"] != 201:
             return templates.TemplateResponse("error.html", {"request": request, "error": response["error"]}, status_code=500)
       else:
@@ -32,6 +33,8 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
                   'access_key': response["access_key"],
                   'secret_key': response["secret_key"],
             }
-            request.session['created'] = created
+            #request.session['created'] = created
       #time.sleep(0.5)
-      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True})
+      #return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True})
+      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
+      
