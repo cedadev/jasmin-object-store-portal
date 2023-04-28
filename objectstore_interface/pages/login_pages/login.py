@@ -39,10 +39,11 @@ def login_splash(request: Request):
 
 @router.route("/login/redirect")
 async def login(request: Request) -> RedirectResponse:
-      print(f"{request.base_url}oauth2/redirect")
+      print(request.headers)
+      print(f"https://{str(request.url)[7:]}oauth2/redirect")
       return await oauth.accounts.authorize_redirect(
             request,
-            f"{request.base_url}oauth2/redirect",
+            f"https://{request._url}oauth2/redirect",
       )
 
 @router.route("/oauth2/redirect")
