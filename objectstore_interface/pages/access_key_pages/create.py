@@ -27,7 +27,7 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
       response = await object_store.create_key(description, expires)
 
       if response["status_code"] != 201:
-            return templates.TemplateResponse("error.html", {"request": request, "error": response["error"]}, status_code=303)
+            return templates.TemplateResponse("error.html", {"request": request, "error": response["error"]}, status_code=500)
       else:
             created = {
                   'access_key': response["access_key"],
@@ -35,4 +35,4 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
             }
             request.session['created'] = created
       time.sleep(0.5)
-      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True}, status_code=303)
+      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True}, status_code=201)
