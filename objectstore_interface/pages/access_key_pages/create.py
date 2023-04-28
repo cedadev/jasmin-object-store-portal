@@ -35,6 +35,6 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
             }
             #request.session['created'] = created
       #time.sleep(0.5)
-      #return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True})
-      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
+      return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True , "created_dict": created})
+      #return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
       

@@ -61,11 +61,11 @@ key created dialog #}
       <div class="modal-body">
         <p>
           <strong>Access Key: </strong
-          ><code>{{ request.session.created.access_key }}</code>
+          ><code>{{ created_dict.access_key }}</code>
         </p>
         <p>
           <strong>S3 Secret Key: </strong
-          ><code>{{ request.session.created.secret_key }}</code>
+          ><code>{{ created_dict.secret_key }}</code>
         </p>
         <p>
           <strong class="text-danger">WARNING:</strong> Make sure you copy your
