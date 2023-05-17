@@ -29,21 +29,33 @@ policy.hasPolicy == false %}
         <td>
           <p>{% for user in policy.Action%} {{ user }} {% endfor %}</p>
         </td>
-        {%if policy.Principal.user|length > 0 %} {% if policy.Principal.user.0
-        == "*"%}
+        {%if policy.Principal.user|length > 0 or policy.Principal.group|length >
+        0 %} {% if policy.Principal.user.0 == "*"%}
         <td>
           <p>All</p>
         </td>
         {% else %}
         <td>
-          <p>{% for user in policy.Principal.user%} {{ user }} {% endfor %}</p>
+          {% if policy.Principal.user|length > 0 %}
+          <p>
+            {% for user in policy.Principal.user%} User: {{ user }} {% endfor %}
+          </p>
+          {% endif %} {% if policy.Principal.group|length > 0%}
+          <p>
+            {% for group in policy.Principal.group%} Group: {{ group }} {%
+            endfor %}
+          </p>
+          {% endif %}
         </td>
         {% endif %} {% elif policy.Principal.anonymous%}
         <td>
           <p>Anonymous Users</p>
         </td>
         {% elif policy.Principal.group|length > 0 %}
-        <p>{% for group in policy.Principal.group%} {{ group }} {% endfor %}</p>
+        <p>
+          {% for group in policy.Principal.group%} Group: {{ group }} {% endfor
+          %}
+        </p>
         {% endif %}
         <td style="padding-right: 0.6em">
           <form
@@ -80,4 +92,4 @@ policy.hasPolicy == false %}
     {% endif %}
   </table>
 </div>
-{{ policy.policy }} {% endblock %}
+{% endblock %}
