@@ -1,4 +1,4 @@
-from objectstore_interface.pages.access_key_pages import view, create
+from objectstore_interface.pages.access_key_pages import view, create, bucket
 from objectstore_interface.pages.login_pages import login
 from objectstore_interface.pages.object_store_pages import auth, list
 from fastapi import FastAPI, Request
@@ -34,6 +34,7 @@ app.include_router(create.router)
 app.include_router(login.router)
 app.include_router(auth.router)
 app.include_router(list.router)
+app.include_router(bucket.router)
 
 @app.route("/")
 def root(request: Request):

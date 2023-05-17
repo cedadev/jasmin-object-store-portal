@@ -23,7 +23,7 @@ async def object_store_show_details(request: Request, storename: str):
             return RedirectResponse(f"/object-store/{storename}")
 
       response = await object_store.get_store(request)
-
+      print(response["access_keys"])
       if response["status_code"] == 401:
             del request.session['access_key_' + str(storename)]
             return RedirectResponse(f"/object-store/{storename}")

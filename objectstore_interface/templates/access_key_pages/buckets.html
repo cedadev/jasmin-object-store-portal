@@ -1,0 +1,25 @@
+{% extends "access_key_pages/objectbase.html" %} {% block object_content %}
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <th>Name</th>
+      <th></th>
+    </thead>
+    <tbody>
+      {% for bucket in buckets %}
+      <tr>
+        <td>{{ bucket.Name }}</td>
+        <td>
+          <a class="btn btn-primary" href="buckets/{{ bucket.Name }}/policy">
+            <i class="fas fa-fw fa-lock"></i> Manage permissions</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if buckets|length == 0 %}
+<h2>Sorry, you have no Object Stores</h2>
+{% endif %} {% endblock %}

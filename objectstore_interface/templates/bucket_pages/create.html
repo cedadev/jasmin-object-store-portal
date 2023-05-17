@@ -1,0 +1,370 @@
+{% extends "bucket_pages/bucketbase.html" %}{% block bucket_content %}
+
+<form class="form-group"
+    method="POST"
+    action=""
+    id="bucket-policy-form"
+    onsubmit="formSubmit()">
+  <fieldset>
+    <label for="policyName" class="form-label">Policy Name</label>
+    <input type="text" id="policyName" class="form-control" name="policyName">
+  </fieldset>
+	<fieldset>
+		<legend>Action</legend>
+		<div>
+			<input type="radio" id="Allow" name="direction" value="Allow" class="form-check-input">
+			<label for="Allow">Allow</label>
+		</div>
+		<div>		
+			<input type="radio" id="Deny" name="direction" value="Deny" class="form-check-input">
+			<label for="Deny">Deny</label>
+		</div>
+	</fieldset>
+  <fieldset>
+    <legend>Who do you want this policy to apply to?</legend>
+    <div>
+      <input
+        type="radio"
+        id="All"
+        name="application"
+        value="All"
+        class="form-check-input"
+      />
+      <label for="All" class="form-check-label">All</label>
+    </div>
+    <div>
+      <input
+        type="radio"
+        id="Users"
+        name="application"
+        value="Users"
+        class="form-check-input"
+      />
+      <label for="Users" class="form-check-label">Specific Users/Groups</label>
+    </div>
+    <div>
+      <input
+        type="radio"
+        id="Anonymous"
+        name="application"
+        value="Anonymous"
+        class="form-check-input"
+      />
+      <label for="Anonymous" class="form-check-label">Anonymous</label>
+    </div>
+  </fieldset>
+  <div class="userSelect" style="display: none">
+    <fieldset>
+      <div>
+        <label for="userSelect" class="form-label"
+          >Users to apply policy to</label
+        >
+        <input type="text" id="userNames" class="form-control" name="userNames"/>
+      </div>
+      <div>
+        <label for="groupNames" class="form-label"
+          >Groups to apply policy to</label
+        >
+        <input type="text" id="groupNames" class="form-control" name="groupNames"/>
+      </div>
+    </fieldset>
+  </div>
+  <fieldset>
+    <legend>Policy Settings</legend>
+    <table class="table margin-top-sm">
+      <thead>
+        <tr>
+          <th>Bucket</th>
+          <th class="text-center">List</th>
+          <th class="text-center">Get</th>
+          <th class="text-center">Put</th>
+          <th class="text-center">Delete</th>
+          <th class="text-center">Copy</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>
+            <span> General </span>
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="ListBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="DeleteBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="CopyBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+        </tr>
+        <tr ng-if="statement.showBucketAclCors" class="ng-scope" style="">
+          <td><span class="margin-left-lg">Bucket ACLs</span></td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucketAcl"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="PutBucketAcl"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">&nbsp;</td>
+        </tr>
+        <tr ng-if="statement.showBucketAclCors" class="ng-scope">
+          <td><span class="margin-left-lg">Bucket CORS</span></td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucketCORS"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="PutBucketCORS"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">&nbsp;</td>
+        </tr>
+        <tr ng-if="statement.showBucketAclCors" class="ng-scope">
+          <td><span class="margin-left-lg">Object Locking</span></td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucketObjectLocking"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="PutBucketObjectLocking"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">&nbsp;</td>
+        </tr>
+        </tbody>
+        </table>
+
+
+        <table class="table margin-top-sm">
+          <thead>
+            <tr>
+              <th>Object</th>
+              <th class="text-center">Get</th>
+              <th class="text-center">Put</th>
+              <th class="text-center">Delete</th>
+              <th class="text-center">Create</th>
+              <th class="text-center">Copy</th>
+              <th class="text-center">Append</th>
+              <th class="text-center">Bypass</th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>
+              <span> General </span>
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="GetObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="DeleteObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="CreateObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="CopyObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="AppendObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+          </tr>
+          <tr ng-if="statement.showObjectAclCors" class="ng-scope" style="">
+            <td><span class="margin-left-lg">Object ACLs</span></td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="GetObjectAcl"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObjectAcl"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+          </tr>
+          <tr ng-if="statement.showObjectAclCors" class="ng-scope">
+            <td><span class="margin-left-lg">Object Retention</span></td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="GetObjectRetention"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObjectRetention"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="BypassGovernanceRetention"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+          </tr>
+          <tr ng-if="statement.showObjectAclCors" class="ng-scope">
+            <td><span class="margin-left-lg">Object Legal Hold</span></td>
+            <td class="text-center"></td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObjectLegalHold"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+          </tr>
+        </table>
+      </tbody>
+    </table>
+  </fieldset>
+  <input value="None" id="actionArray" name="actionArray" type="hidden">
+  <button type="submit">Save</button>
+</form>
+
+<script>
+  $(document).ready(function () {
+    $('input[type="radio"]').click(function () {
+      var selection = $(this).val();
+      console.log(selection);
+      $("div.userSelect").hide();
+      if (selection == "Users") {
+        $("div.userSelect").show();
+      }
+    });
+  });
+
+  function formSubmit(){
+    var actionArray = $("input:checkbox[name=actions]:checked").map(function(){return $(this).attr("id")}).get()
+    console.log(actionArray)
+    document.getElementById("actionArray").value = actionArray
+
+    if(document.getElementById("userNames").value == ""){
+        document.getElementById("userNames").value = "null"
+    }
+
+    if(document.getElementById("groupNames").value == ""){
+        document.getElementById("groupNames").value = "null"
+    }
+  }
+</script>
+
+{%endblock%}

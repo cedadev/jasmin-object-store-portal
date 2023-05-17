@@ -25,6 +25,7 @@ async def object_store_get_key(request: Request, storename, password: Annotated[
             return templates.TemplateResponse("error.html", {"request": request, "error": response["error"]})
 
       request.session['access_key_' + str(storename)] = response["access_key"]
+      request.session['s3_access_key_' + str(storename)] = response["s3_access_key"]
       request.session[storename] = jsonpickle.encode(object_store)
       return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       

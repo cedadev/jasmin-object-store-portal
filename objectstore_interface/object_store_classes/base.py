@@ -8,6 +8,12 @@ class ObjectStore():
     async def get_store(self) -> dict:
         pass
 
+    async def get_buckets(self):
+        pass
+    
+    async def get_bucket_details(self, bucket):
+        pass
+    
     async def get_access_key(self):
         pass
 
@@ -17,5 +23,12 @@ class ObjectStore():
     async def delete_key(self):
         pass
 
-    async def _return_error(self, response):
-          return {"status_code": response.status_code, "error": f"{response.status_code}: {response.content.strip()}"} 
+    async def create_policy(self):
+        pass
+
+    async def delete_policy(self):
+        pass
+
+    def _return_error(self, response):
+        print(response.status_code)
+        return {"status_code": response.status_code, "error": f"{response.status_code}: {response.text}"} 

@@ -1,0 +1,83 @@
+{% extends "bucket_pages/bucketbase.html" %} {% block bucket_content %} {% if
+policy.hasPolicy == false %}
+<h2>This store has no policies</h2>
+{% else %}
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>Policy Name</th>
+        <th>Effect</th>
+        <th>Actions</th>
+        <th>Applies to</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for policy in policy.policy %}
+      <tr>
+        <td>{{ policy.Sid }}</td>
+        {% if policy.Effect == "Allow" %}
+        <td class="text-success">
+          <i class="fa fa-fw fa-check"></i> <code>Allow</code>
+        </td>
+        {% elif policy.Effect == "Deny" %}
+        <td class="text-warning">
+          <i class="fa fa-fw fa-ban"></i> <code>Deny</code>
+        </td>
+        {% endif %}
+        <td>
+          <p>{% for user in policy.Action%} {{ user }} {% endfor %}</p>
+        </td>
+        {%if policy.Principal.user|length > 0 %} {% if policy.Principal.user.0
+        == "*"%}
+        <td>
+          <p>All</p>
+        </td>
+        {% else %}
+        <td>
+          <p>{% for user in policy.Principal.user%} {{ user }} {% endfor %}</p>
+        </td>
+        {% endif %} {% elif policy.Principal.anonymous%}
+        <td>
+          <p>Anonymous Users</p>
+        </td>
+        {% elif policy.Principal.group|length > 0 %}
+        <p>{% for group in policy.Principal.group%} {{ group }} {% endfor %}</p>
+        {% endif %}
+        <td style="padding-right: 0.6em">
+          <form
+            method="post"
+            action=""
+            class="form-horizontal"
+            id="delete_policy_form"
+            onsubmit=""
+          >
+            <div class="form-group">
+              <input
+                type="hidden"
+                id="delete_policy_input"
+                name="policy"
+                value="{{ loop.index0 }}"
+              />
+              <button
+                name="delete_policy_btn"
+                id="delete_policy_btn"
+                type="submit"
+                class="btn btn-primary"
+                style="float: right; margin-right: 1.2em"
+                autocomplete="off"
+                onclick=""
+              >
+                <i class="fa fa-fw fa-trash"></i> Delete
+              </button>
+            </div>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% endif %}
+  </table>
+</div>
+{{ policy.policy }} {% endblock %}
