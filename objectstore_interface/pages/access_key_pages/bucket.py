@@ -1,5 +1,5 @@
 import jsonpickle
-
+import logging
 from objectstore_interface.object_store_classes.base import ObjectStore
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
@@ -12,30 +12,48 @@ router = APIRouter()
 
 @router.get("/object-store/{storename}/buckets")
 async def view_buckets(request: Request, storename):
-    object_store: ObjectStore = jsonpickle.decode(request.session[storename])
+    try:
+        object_store: ObjectStore = jsonpickle.decode(request.session[storename])
 
-    bucket_list = await object_store.get_buckets()
-    return templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
+        bucket_list = await object_store.get_buckets()
+        return templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
+    except Exception as e:
+        logging.error(e)
+        return templates.TemplateResponse("error.html", {"error": e})
 
 @router.get("/object-store/{storename}/buckets/{bucket}/policy")
 async def view_permissions(request: Request, storename, bucket):
-    object_store: ObjectStore = jsonpickle.decode(request.session[storename])
+    try:
+        object_store: ObjectStore = jsonpickle.decode(request.session[storename])
 
-    perm_list = await object_store.get_bucket_details(bucket)
+        perm_list = await object_store.get_bucket_details(bucket)
 
-    return templates.TemplateResponse("bucket_pages/policies.html", {"request": request, "view": "view", "policy": perm_list, "storename": storename, "bucket": bucket})
+        return templates.TemplateResponse("bucket_pages/policies.html", {"request": request, "view": "view", "policy": perm_list, "storename": storename, "bucket": bucket})
+    except Exception as e:
+        logging.error(e)
+        return templates.TemplateResponse("error.html", {"error": e})
 
 @router.post("/object-store/{storename}/buckets/{bucket}/policy")
 async def delete_policy(request: Request, storename, bucket, policy: Annotated[str, Form()]):
-    object_store: ObjectStore = jsonpickle.decode(request.session[storename])
+    try:
+        object_store: ObjectStore = jsonpickle.decode(request.session[storename])
+        detail = policy.split("_")
+        if detail[0] == "delete":
+            response = await object_store.delete_policy(bucket, detail[1])
 
-    response = await object_store.delete_policy(bucket, policy)
-
-    return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303)
+            return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303)
+        if detail[0] == "edit":
+            return "Edit"
+    except Exception as e:
+        logging.error(e)
+        return templates.TemplateResponse("error.html", {"error": e})
 
 @router.get("/object-store/{storename}/buckets/{bucket}/create")
 async def permissions_page(request: Request, storename, bucket):
-    return templates.TemplateResponse("bucket_pages/create.html", {"request": request, "view": "create", "storename": storename, "bucket": bucket})
+    try:
+        return templates.TemplateResponse("bucket_pages/create.html", {"request": request, "view": "create", "storename": storename, "bucket": bucket})
+    except Exception as e:
+        return templates.TemplateResponse("error.html", {"error": e})
 
 @router.post("/object-store/{storename}/buckets/{bucket}/create")
 async def create_permissions(
@@ -48,7 +66,11 @@ async def create_permissions(
                             policyName: Annotated[str, Form()],
                             direction: Annotated[str, Form()]
 ):
-    object_store: ObjectStore = jsonpickle.decode(request.session[storename])
-    response = await object_store.create_policy(actionArray, groupNames, userNames, application, policyName, direction, bucket)
+    try:
+        object_store: ObjectStore = jsonpickle.decode(request.session[storename])
+        response = await object_store.create_policy(actionArray, groupNames, userNames, application, policyName, direction, bucket)
 
-    return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303)
+        return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303)
+    except Exception as e:
+        logging.error(e)
+        return templates.TemplateResponse("error.html", {"error": e})

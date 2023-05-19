@@ -70,7 +70,7 @@ policy.hasPolicy == false %}
                 type="hidden"
                 id="delete_policy_input"
                 name="policy"
-                value="{{ loop.index0 }}"
+                value="delete_{{ loop.index0 }}"
               />
               <button
                 name="delete_policy_btn"
@@ -82,6 +82,33 @@ policy.hasPolicy == false %}
                 onclick=""
               >
                 <i class="fa fa-fw fa-trash"></i> Delete
+              </button>
+            </div>
+          </form>
+          <form
+            method="post"
+            action=""
+            class="form-horizontal"
+            id="edit_policy_form"
+            onsubmit=""
+          >
+            <div class="form-group">
+              <input
+                type="hidden"
+                id="edit_policy_input"
+                name="policy"
+                value="edit_{{ loop.index0 }}"
+              />
+              <button
+                name="edit_policy_btn"
+                id="edit_policy_btn"
+                type="submit"
+                class="btn btn-primary"
+                style="float: right; margin-right: 1.2em"
+                autocomplete="off"
+                onclick=""
+              >
+                <i class="fa fa-fw fa-pen"></i> Edit
               </button>
             </div>
           </form>

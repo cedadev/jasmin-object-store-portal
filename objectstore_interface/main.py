@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware import Middleware, sessions
 import yaml
+import logging
 from objectstore_interface.custom_middleware import RedirectWhenLoggedOut, MockSessionMiddleware
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
@@ -38,4 +39,8 @@ app.include_router(bucket.router)
 
 @app.route("/")
 def root(request: Request):
-      return templates.TemplateResponse("index.html", {"request": request})
+      try:
+            return templates.TemplateResponse("index.html", {"request": request})
+      except Exception as e:
+        logging.ERROR(e)
+        return templates.TemplateResponse("error.html", {"error": e})
