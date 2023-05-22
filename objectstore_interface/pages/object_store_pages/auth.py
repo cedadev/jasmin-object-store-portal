@@ -25,16 +25,18 @@ async def object_store_verify_password(request: Request, storename):
 @router.post("/object-store/{storename}")
 async def object_store_get_key(request: Request, storename, password: Annotated[str, Form()]):
       try:
+            print("Debugging")
             object_store: ObjectStore = jsonpickle.decode(request.session[storename])
             response = await object_store.get_access_key(password, request)
+            print("After response arrives")
             if response["error"] is not None:
                   return templates.TemplateResponse("object_store_pages/pass.html", {"request": request, "storename": storename, "wrong": "true"})
 
             request.session['access_key_' + str(storename)] = response["access_key"]
             request.session['s3_access_key_' + str(storename)] = response["s3_access_key"]
             request.session[storename] = jsonpickle.encode(object_store)
-            return PlainTextResponse("Password correct")
-      #RedirectResponse(f"/object-store/{storename}/access-keys", 303)
+            print("After request is processed")
+            return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       except Exception as e:
         logging.error("".join(traceback.format_exception(e)))
         return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
