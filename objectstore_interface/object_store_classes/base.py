@@ -1,4 +1,4 @@
-
+import json
 
 class ObjectStore():
     def __init__(self, name, location) -> None:
@@ -31,3 +31,7 @@ class ObjectStore():
 
     def _return_error(self, response):
         return {"status_code": response.status_code, "error": f"{response.status_code}: {response.text}"} 
+    
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)

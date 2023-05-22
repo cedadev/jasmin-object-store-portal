@@ -2,6 +2,7 @@ import jsonpickle
 import time
 import logging, traceback
 from objectstore_interface.object_store_classes.base import ObjectStore
+from objectstore_interface.object_store_classes.fromjson import storefromjson
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -27,7 +28,7 @@ async def create_object_store_keys_page(request: Request, storename):
 @router.post("/object-store/{storename}/create-keys")
 async def create_object_store_keys(request: Request, storename, expires: Annotated[str, Form()], description: Annotated[str, Form()]):
       try:
-            object_store: ObjectStore = jsonpickle.decode(request.session[storename])
+            object_store: ObjectStore = storefromjson(request.session[storename])
 
             response = await object_store.create_key(description, expires)
             if response["status_code"] != 201:

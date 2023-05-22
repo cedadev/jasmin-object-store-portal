@@ -16,7 +16,7 @@ class DataCore(ObjectStore):
     def __init__(self, location: str, name: str = None, ) -> None:
         self.name = location.split(".")[0]
         self.location = location
-        self.key = None
+        self.type = "Datacore"
 
     async def get_store(self, request: Request, password: str = None) -> dict:
         headers = {

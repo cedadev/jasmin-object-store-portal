@@ -1,6 +1,7 @@
 import jsonpickle
 import logging
 import traceback
+from objectstore_interface.object_store_classes.fromjson import storefromjson
 from objectstore_interface.object_store_classes.base import ObjectStore
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse, PlainTextResponse
@@ -26,7 +27,8 @@ async def object_store_verify_password(request: Request, storename):
 async def object_store_get_key(request: Request, storename, password: Annotated[str, Form()]):
       try:
             print("Debugging")
-            object_store: ObjectStore = jsonpickle.decode(request.session[storename])
+            object_store: ObjectStore = storefromjson(request.session[storename])
+            #jsonpickle.decode(request.session[storename])
             response = await object_store.get_access_key(password, request)
             print("After response arrives")
             if response["error"] is not None:
@@ -34,7 +36,7 @@ async def object_store_get_key(request: Request, storename, password: Annotated[
 
             request.session['access_key_' + str(storename)] = response["access_key"]
             request.session['s3_access_key_' + str(storename)] = response["s3_access_key"]
-            #request.session[storename] = jsonpickle.encode(object_store)
+            request.session[storename] = object_store.toJSON()
             print("After request is processed")
             return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       except Exception as e:

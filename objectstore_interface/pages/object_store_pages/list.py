@@ -26,7 +26,7 @@ async def object_store_list(request: Request):
                               if requirement["resource"]["name"] == "Caringo Object Store HPOS": #See if they're using datacore (caringo) Add more for different object stores (Create class for them as well)
                                     if requirement["location"].split(".")[0] in services_json["object_store"].keys(): #Check user has access to this object store
                                           user_stores[requirement["location"].split(".")[0]] = {"name": requirement["location"].split(".")[0], "location": requirement["location"]}
-                                          request.session[requirement["location"].split(".")[0]] = jsonpickle.encode(DataCore(requirement["location"]))
+                                          request.session[requirement["location"].split(".")[0]] = DataCore(requirement["location"]).toJSON()
 
                   request.session["user_stores"] = user_stores
                   request.session["services_json"] = services_json
