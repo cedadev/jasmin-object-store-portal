@@ -37,8 +37,8 @@ def login_splash(request: Request):
       try:
             return templates.TemplateResponse("login_pages/login.html", {"request": request})
       except Exception as e:
-        logging.error("".join(traceback.format_exception(e)))
-        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
 
 
 @router.route("/login/redirect")
@@ -49,8 +49,8 @@ async def login(request: Request) -> RedirectResponse:
                   config["accounts"]["redirectUri"],
             )
       except Exception as e:
-        logging.error("".join(traceback.format_exception(e)))
-        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
 
 @router.route("/oauth2/redirect")
 async def email(request: Request) -> RedirectResponse:
@@ -59,8 +59,8 @@ async def email(request: Request) -> RedirectResponse:
             request.session["projects_token"] = await projects_portal.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
             return RedirectResponse("/object-store" )
       except Exception as e:
-        logging.error("".join(traceback.format_exception(e)))
-        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
 
 @router.get("/account/logout")
 async def logout(request: Request):
@@ -68,5 +68,5 @@ async def logout(request: Request):
             request.session.clear()
             return RedirectResponse("/login")
       except Exception as e:
-        logging.error("".join(traceback.format_exception(e)))
-        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})

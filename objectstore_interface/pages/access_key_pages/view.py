@@ -37,9 +37,8 @@ async def object_store_show_details(request: Request, storename: str):
             print("Return fine")
             return templates.TemplateResponse("access_key_pages/objectstore.html", {"request": request, "access_keys": response["access_keys"], "storename": storename, "view": "view"})
       except Exception as e:
-        print(e)
-        logging.error("".join(traceback.format_exception(e)))
-        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
 
 @router.post("/object-store/{storename}/access-keys")
 async def access_key_delete(request: Request, storename: str, delete_access_key: Annotated[str, Form()]):
@@ -60,5 +59,5 @@ async def access_key_delete(request: Request, storename: str, delete_access_key:
                   logging.error(e)
                   return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       except Exception as e:
-            logging.error("".join(traceback.format_exception(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})

@@ -22,8 +22,8 @@ async def create_object_store_keys_page(request: Request, storename):
             
             return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
       except Exception as e:
-        logging.error("".join(traceback.format_exception(e)))
-        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
 
 @router.post("/object-store/{storename}/create-keys")
 async def create_object_store_keys(request: Request, storename, expires: Annotated[str, Form()], description: Annotated[str, Form()]):
@@ -43,6 +43,6 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
             return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True , "created_dict": created})
             #return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
       except Exception as e:
-        logging.error("".join(traceback.format_exception(e)))
-        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
+            logging.error("".join(traceback.format_exc(e)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
       
