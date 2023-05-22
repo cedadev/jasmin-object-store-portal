@@ -1,4 +1,5 @@
-import jsonpickle
+import jsonpickle, json
+import traceback
 import logging
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
@@ -14,7 +15,6 @@ async def object_store_list(request: Request):
       try:
             services = await login.oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/services/", token=request.session["token"])
             services_json = services.json()
-
             # Only pull entire list when the user has just logged in or there is a change to the users access permissions.
             if request.session.get("user_stores") == None or services_json != request.session.get("services_json"):
                   await login.projects_portal.fetch_token(login.TOKEN_ENDPOINT)
@@ -34,5 +34,5 @@ async def object_store_list(request: Request):
                   user_stores = request.session["user_stores"]
             return templates.TemplateResponse("object_store_pages/storelist.html", {"request": request, "user_stores": user_stores})
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})

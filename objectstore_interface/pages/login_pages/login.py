@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import yaml
-import logging
+import logging, traceback
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
@@ -22,7 +22,6 @@ try:
             client_secret=config["accounts"]["client_secret"]
             )
 except KeyError:
-      print(config)
       exit()
 
 projects_portal =  AsyncOAuth2Client(
@@ -38,21 +37,20 @@ def login_splash(request: Request):
       try:
             return templates.TemplateResponse("login_pages/login.html", {"request": request})
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 
 @router.route("/login/redirect")
 async def login(request: Request) -> RedirectResponse:
       try:
-            #print(f"{request.headers.get(':scheme:', 'http')}://{request.url.hostname}/oauth2/redirect")
             return await oauth.accounts.authorize_redirect(
                   request,
                   config["accounts"]["redirectUri"],
             )
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.route("/oauth2/redirect")
 async def email(request: Request) -> RedirectResponse:
@@ -61,8 +59,8 @@ async def email(request: Request) -> RedirectResponse:
             request.session["projects_token"] = await projects_portal.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
             return RedirectResponse("/object-store" )
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.get("/account/logout")
 async def logout(request: Request):
@@ -70,5 +68,5 @@ async def logout(request: Request):
             request.session.clear()
             return RedirectResponse("/login")
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})

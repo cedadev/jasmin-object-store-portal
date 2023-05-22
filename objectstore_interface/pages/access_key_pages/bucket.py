@@ -1,5 +1,5 @@
 import jsonpickle
-import logging
+import logging, traceback
 from objectstore_interface.object_store_classes.base import ObjectStore
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
@@ -18,8 +18,8 @@ async def view_buckets(request: Request, storename):
         bucket_list = await object_store.get_buckets()
         return templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
     except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.get("/object-store/{storename}/buckets/{bucket}/policy")
 async def view_permissions(request: Request, storename, bucket):
@@ -30,8 +30,8 @@ async def view_permissions(request: Request, storename, bucket):
 
         return templates.TemplateResponse("bucket_pages/policies.html", {"request": request, "view": "view", "policy": perm_list, "storename": storename, "bucket": bucket})
     except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.post("/object-store/{storename}/buckets/{bucket}/policy")
 async def delete_policy(request: Request, storename, bucket, policy: Annotated[str, Form()]):
@@ -45,15 +45,16 @@ async def delete_policy(request: Request, storename, bucket, policy: Annotated[s
         if detail[0] == "edit":
             return "Edit"
     except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.get("/object-store/{storename}/buckets/{bucket}/create")
 async def permissions_page(request: Request, storename, bucket):
     try:
         return templates.TemplateResponse("bucket_pages/create.html", {"request": request, "view": "create", "storename": storename, "bucket": bucket})
     except Exception as e:
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.post("/object-store/{storename}/buckets/{bucket}/create")
 async def create_permissions(
@@ -72,5 +73,5 @@ async def create_permissions(
 
         return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303)
     except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})

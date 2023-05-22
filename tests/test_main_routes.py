@@ -127,7 +127,6 @@ def test_read_create_access_keys():
 def test_create_access_keys(mock_post):
     today = datetime.today()
     payload = {"expires": f"{(today+relativedelta(weeks=2)).strftime('%d/%m/%Y')}", "description": "test-create-key"}
-    print(payload)
 
     mock_response = MagicMock()
     mock_response.status_code = 201

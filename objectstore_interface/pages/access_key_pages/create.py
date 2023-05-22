@@ -1,6 +1,6 @@
 import jsonpickle
 import time
-import logging
+import logging, traceback
 from objectstore_interface.object_store_classes.base import ObjectStore
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse, JSONResponse
@@ -21,8 +21,8 @@ async def create_object_store_keys_page(request: Request, storename):
             
             return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.post("/object-store/{storename}/create-keys")
 async def create_object_store_keys(request: Request, storename, expires: Annotated[str, Form()], description: Annotated[str, Form()]):
@@ -30,7 +30,6 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
             object_store: ObjectStore = jsonpickle.decode(request.session[storename])
 
             response = await object_store.create_key(description, expires)
-            print(response["status_code"])
             if response["status_code"] != 201:
                   return templates.TemplateResponse("error.html", {"request": request, "error": response["error"]}, status_code=500)
             else:
@@ -43,6 +42,6 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
             return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True , "created_dict": created})
             #return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
       

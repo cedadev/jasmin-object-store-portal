@@ -203,7 +203,6 @@ class DataCore(ObjectStore):
         try:
             response = jasmin_bucket.Policy().policy
         except Exception as e:
-             print(e)
              return {"hasPolicy": False, "policy": []}
         response_dict = ast.literal_eval(response)
         return {"hasPolicy": True, "policy": response_dict["Statement"]}

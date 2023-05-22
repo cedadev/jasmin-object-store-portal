@@ -30,5 +30,4 @@ class ObjectStore():
         pass
 
     def _return_error(self, response):
-        print(response.status_code)
         return {"status_code": response.status_code, "error": f"{response.status_code}: {response.text}"} 

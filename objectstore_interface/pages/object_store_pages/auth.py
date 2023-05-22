@@ -1,5 +1,6 @@
 import jsonpickle
 import logging
+import traceback
 from objectstore_interface.object_store_classes.base import ObjectStore
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
@@ -18,8 +19,8 @@ async def object_store_verify_password(request: Request, storename):
                   return RedirectResponse(f"/object-store/{storename}/access-keys")
             return templates.TemplateResponse("object_store_pages/pass.html", {"request": request, "storename": storename, "wrong": "false"})
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
 
 @router.post("/object-store/{storename}")
 async def object_store_get_key(request: Request, storename, password: Annotated[str, Form()]):
@@ -34,6 +35,6 @@ async def object_store_get_key(request: Request, storename, password: Annotated[
             request.session[storename] = jsonpickle.encode(object_store)
             return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+        logging.error("".join(traceback.format_exception(e)))
+        return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
       
