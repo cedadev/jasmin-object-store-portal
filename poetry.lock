@@ -919,6 +919,25 @@ typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyaml"]
 
 [[package]]
+name = "starsessions"
+version = "2.1.1"
+description = "Advanced sessions for Starlette and FastAPI frameworks"
+category = "main"
+optional = false
+python-versions = ">=3.8.0,<4.0.0"
+files = [
+    {file = "starsessions-2.1.1-py3-none-any.whl", hash = "sha256:e3573ce6f3531b201021443fa5c7ec72d360835dcb102d384c4f87ac942005a6"},
+    {file = "starsessions-2.1.1.tar.gz", hash = "sha256:cb250de84ebc6159ad187cab69e6fe60eab11684b40349457e74dcfb7656c805"},
+]
+
+[package.dependencies]
+itsdangerous = ">=2.0.1,<3.0.0"
+starlette = ">=0,<1"
+
+[package.extras]
+redis = ["redis (>=4.2.0rc1)"]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -981,4 +1000,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "9e955accf51dba87cdd7afeb3e9a4f53e433ca089ccb95c7b7eade59a3101e24"
+content-hash = "aa952b5d499ca7f09171593b267325925d475f41b57f0ff6ed9bd615ee2b183d"

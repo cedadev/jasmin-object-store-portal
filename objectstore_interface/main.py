@@ -8,16 +8,21 @@ from starlette.middleware import Middleware, sessions
 import yaml
 import logging
 from objectstore_interface.custom_middleware import RedirectWhenLoggedOut, MockSessionMiddleware
+from starsessions import InMemoryStore, SessionMiddleware, SessionAutoloadMiddleware
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("conf/common.secrets.yaml") as confile:
       config = yaml.safe_load(confile)
 
+session_store = InMemoryStore()
+
 middleware = [
       Middleware(
-            sessions.SessionMiddleware,
-            secret_key="supersecret",
+            SessionMiddleware,
+            store = session_store,
+            lifetime=3600*24*14
       ),
+      Middleware(SessionAutoloadMiddleware),
       Middleware(
             RedirectWhenLoggedOut
       ),
