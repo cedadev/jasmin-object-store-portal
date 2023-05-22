@@ -3,7 +3,7 @@ import logging
 import traceback
 from objectstore_interface.object_store_classes.base import ObjectStore
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 from typing import Annotated
 
@@ -33,7 +33,8 @@ async def object_store_get_key(request: Request, storename, password: Annotated[
             request.session['access_key_' + str(storename)] = response["access_key"]
             request.session['s3_access_key_' + str(storename)] = response["s3_access_key"]
             request.session[storename] = jsonpickle.encode(object_store)
-            return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
+            return PlainTextResponse("Password correct")
+      #RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       except Exception as e:
         logging.error("".join(traceback.format_exception(e)))
         return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(e))})
