@@ -19,6 +19,7 @@ class RedirectWhenLoggedOut(BaseHTTPMiddleware):
             return await call_next(request)
         if request.session.get("token") is None:
             return RedirectResponse("/login")
+        print(f"Middleware accessed for {currenturl}")
         return await call_next(request)
     
 
