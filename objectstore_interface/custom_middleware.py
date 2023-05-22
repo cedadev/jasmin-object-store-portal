@@ -1,7 +1,14 @@
 from fastapi.applications import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from http import HTTPStatus
 import json
+from fastapi.templating import Jinja2Templates
+
+from starlette.requests import Request
+from starlette.responses import Response
+
+templates = Jinja2Templates(directory="objectstore_interface/templates")
 
 class RedirectWhenLoggedOut(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -22,3 +29,13 @@ class MockSessionMiddleware(BaseHTTPMiddleware):
              for k,v in options["options"].items():
                 http_request.session[k] = v
         return await call_next(http_request)
+    
+class SupressNoResponseMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
+        try:
+            return await call_next(request)
+        except RuntimeError as exc:
+            print(exc)
+            if str(exc) == 'No response returned.' and await request.is_disconnected():
+                return Response(status_code= HTTPStatus.NO_CONTENT)
+            raise

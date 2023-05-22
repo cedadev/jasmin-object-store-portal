@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware import Middleware, sessions
 import yaml
 import logging
-from objectstore_interface.custom_middleware import RedirectWhenLoggedOut, MockSessionMiddleware
+from objectstore_interface.custom_middleware import RedirectWhenLoggedOut, MockSessionMiddleware, SupressNoResponseMiddleware
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("conf/common.secrets.yaml") as confile:
@@ -42,5 +42,5 @@ def root(request: Request):
       try:
             return templates.TemplateResponse("index.html", {"request": request})
       except Exception as e:
-        logging.ERROR(e)
+        logging.error(e)
         return templates.TemplateResponse("error.html", {"error": e})
