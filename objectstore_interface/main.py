@@ -23,9 +23,9 @@ middleware = [
             lifetime=3600*24*14
       ),
       Middleware(SessionAutoloadMiddleware),
-      Middleware(
-            RedirectWhenLoggedOut
-      ),
+      #Middleware(
+      #      RedirectWhenLoggedOut
+      #),
 ]
 
 if config["testing"] == True:
