@@ -8,13 +8,14 @@ from starlette.middleware import Middleware, sessions, httpsredirect
 import yaml
 import logging, traceback, sys
 from objectstore_interface.custom_middleware import RedirectWhenLoggedOut, MockSessionMiddleware
-from starsessions import InMemoryStore, SessionMiddleware, SessionAutoloadMiddleware
+from starsessions import SessionMiddleware, SessionAutoloadMiddleware
+from starsessions.stores.redis import RedisStore
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("conf/common.secrets.yaml") as confile:
       config = yaml.safe_load(confile)
 
-session_store = InMemoryStore()
+session_store = RedisStore(config["redis"]["url"])
 
 middleware = [
       Middleware(
