@@ -17,8 +17,7 @@ async def view_buckets(request: Request, storename):
         object_store: ObjectStore = storefromjson(request.session[storename])
 
         bucket_list = await object_store.get_buckets()
-        return  JSONResponse(bucket_list)
-    #templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
+        return  templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
     except Exception as e:
         logging.error("".join(traceback.format_exc(e)))
         return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
