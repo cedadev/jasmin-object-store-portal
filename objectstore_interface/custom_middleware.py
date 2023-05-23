@@ -12,15 +12,16 @@ templates = Jinja2Templates(directory="objectstore_interface/templates")
 
 class RedirectWhenLoggedOut(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
         allowed_urls = ["login", "redirect", "static"]
         currenturl = request.url._url.replace(str(request.base_url), "")
         currenturl = currenturl.replace(str("?"+request.url.query), "")
         if any(url in currenturl for url in allowed_urls):
-            return await call_next(request)
+            return response
         if request.session.get("token") is None:
             return RedirectResponse("/login")
         print(f"Middleware accessed for {currenturl}")
-        return await call_next(request)
+        return response
     
 
 class MockSessionMiddleware(BaseHTTPMiddleware):
