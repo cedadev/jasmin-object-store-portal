@@ -3,7 +3,7 @@ import logging, traceback
 from objectstore_interface.object_store_classes.base import ObjectStore
 from objectstore_interface.object_store_classes.fromjson import storefromjson
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from typing import Annotated
 
@@ -17,7 +17,8 @@ async def view_buckets(request: Request, storename):
         object_store: ObjectStore = storefromjson(request.session[storename])
 
         bucket_list = await object_store.get_buckets()
-        return templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
+        return  JSONResponse(bucket_list)
+    #templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
     except Exception as e:
         logging.error("".join(traceback.format_exc(e)))
         return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
