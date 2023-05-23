@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import yaml
-import logging, traceback
+import logging, traceback, sys
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
@@ -36,9 +36,10 @@ router = APIRouter()
 def login_splash(request: Request):
       try:
             return templates.TemplateResponse("login_pages/login.html", {"request": request})
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
 
 
 @router.route("/login/redirect")
@@ -48,9 +49,10 @@ async def login(request: Request) -> RedirectResponse:
                   request,
                   config["accounts"]["redirectUri"],
             )
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
 
 @router.route("/oauth2/redirect")
 async def email(request: Request) -> RedirectResponse:
@@ -58,15 +60,17 @@ async def email(request: Request) -> RedirectResponse:
             request.session["token"] = await oauth.accounts.authorize_access_token(request)
             request.session["projects_token"] = await projects_portal.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
             return RedirectResponse("/object-store" )
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
 
 @router.get("/account/logout")
 async def logout(request: Request):
       try:
             request.session.clear()
             return RedirectResponse("/login")
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})

@@ -1,5 +1,5 @@
 import jsonpickle, json
-import traceback
+import traceback, sys
 import logging
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
@@ -33,6 +33,7 @@ async def object_store_list(request: Request):
             else:
                   user_stores = request.session["user_stores"]
             return templates.TemplateResponse("object_store_pages/storelist.html", {"request": request, "user_stores": user_stores})
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})

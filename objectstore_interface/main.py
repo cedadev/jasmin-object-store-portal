@@ -4,9 +4,9 @@ from objectstore_interface.pages.object_store_pages import auth, list
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware import Middleware, sessions
+from starlette.middleware import Middleware, sessions, httpsredirect
 import yaml
-import logging
+import logging, traceback, sys
 from objectstore_interface.custom_middleware import RedirectWhenLoggedOut, MockSessionMiddleware
 from starsessions import InMemoryStore, SessionMiddleware, SessionAutoloadMiddleware
 
@@ -46,6 +46,7 @@ app.include_router(bucket.router)
 def root(request: Request):
       try:
             return templates.TemplateResponse("index.html", {"request": request})
-      except Exception as e:
-        logging.error(e)
-        return templates.TemplateResponse("error.html", {"error": e})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})

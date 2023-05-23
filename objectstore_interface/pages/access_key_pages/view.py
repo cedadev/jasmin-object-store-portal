@@ -1,6 +1,6 @@
 import jsonpickle
 import time
-import logging, traceback
+import logging, traceback, sys
 from objectstore_interface.object_store_classes.base import ObjectStore
 from objectstore_interface.object_store_classes.fromjson import storefromjson
 from fastapi import APIRouter, Request, Form
@@ -15,10 +15,8 @@ router = APIRouter()
 @router.get("/object-store/{storename}/access-keys")
 async def object_store_show_details(request: Request, storename: str):
       try:
-            print("Beginning of view")
             object_store: ObjectStore = storefromjson(request.session[storename])
             auth_access_key = request.session.get('access_key_' + str(storename), None)
-            print("Got access key")
             if request.session.get('created'):
                   request.session.pop('created')
 
@@ -26,7 +24,6 @@ async def object_store_show_details(request: Request, storename: str):
                   return RedirectResponse(f"/object-store/{storename}")
 
             response = await object_store.get_store(request)
-            print("Got response")
             if response["status_code"] == 401:
                   del request.session['access_key_' + str(storename)]
                   return RedirectResponse(f"/object-store/{storename}")
@@ -34,11 +31,11 @@ async def object_store_show_details(request: Request, storename: str):
             if response["status_code"] != 200:
                   return templates.TemplateResponse("error.html", {"request": request, "error": f"{response.status_code}: {response.text}"})
 
-            print("Return fine")
             return templates.TemplateResponse("access_key_pages/objectstore.html", {"request": request, "access_keys": response["access_keys"], "storename": storename, "view": "view"})
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
 
 @router.post("/object-store/{storename}/access-keys")
 async def access_key_delete(request: Request, storename: str, delete_access_key: Annotated[str, Form()]):
@@ -59,5 +56,6 @@ async def access_key_delete(request: Request, storename: str, delete_access_key:
                   logging.error(e)
                   return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})

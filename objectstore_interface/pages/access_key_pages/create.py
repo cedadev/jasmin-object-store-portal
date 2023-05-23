@@ -1,6 +1,6 @@
 import jsonpickle
 import time
-import logging, traceback
+import logging, traceback, sys
 from objectstore_interface.object_store_classes.base import ObjectStore
 from objectstore_interface.object_store_classes.fromjson import storefromjson
 from fastapi import APIRouter, Request, Form
@@ -21,9 +21,10 @@ async def create_object_store_keys_page(request: Request, storename):
                   return RedirectResponse(f"/object-store/{storename}")
             
             return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
 
 @router.post("/object-store/{storename}/create-keys")
 async def create_object_store_keys(request: Request, storename, expires: Annotated[str, Form()], description: Annotated[str, Form()]):
@@ -42,7 +43,8 @@ async def create_object_store_keys(request: Request, storename, expires: Annotat
             #time.sleep(0.5)
             return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create", "created": True , "created_dict": created})
             #return templates.TemplateResponse("access_key_pages/keycreate.html", {"request": request, "storename": storename, "view": "create"})
-      except Exception as e:
-            logging.error("".join(traceback.format_exc(e)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exc(e))})
+      except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
       
