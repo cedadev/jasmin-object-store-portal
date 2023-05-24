@@ -124,45 +124,47 @@ policy.hasPolicy == false %}
   </table>
 </div>
 
-  {% if edit == true %}
+{% if edit == true %}
   
-  <div class="banner banner-info modal" id="key-creation-content" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+<div class="banner banner-info modal" id="policy-edit-content" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
       <div class="modal-body">
         {% include "bucket_pages/bucketform.html" %}
       </div>
     </div>
   </div>
-  
-  <script>
-    var policyDetails = JSON.parse('{{ policy_detail | tojson}}')
-    if(policyDetails["Action"] == "*"){
-      $(":checkbox[name='actions']").attr('checked', true)
-    }
-    else{
-      policyDetails["Action"].forEach(item => $("#"+item).attr('checked', true))
-    }
-    $("input[name='policyName']").val(policyDetails["Sid"])
+</div>
 
-    if(policyDetails["Principal"].hasOwnProperty("anonymous")){
-      $(":radio[value='Anonymous']").attr('checked', true)
-    }
-    else if(policyDetails["Principal"].hasOwnProperty("group") && policyDetails["Principal"].hasOwnProperty("user")){
-      $(":radio[value='Users']").attr('checked', true)
-      $("#userNames").val(policyDetails["Principal"]["user"])
-      $("#groupNames").val(policyDetails["Principal"]["group"])
-      $("div.userSelect").show();
-    }
-    else{
-      $(":radio[value='All']").attr('checked', true)
-    }
-    $("#"+policyDetails["Effect"]).attr('checked', true)
-    var modal = new bootstrap.Modal(
-      document.getElementById("key-creation-content"),
-      { focus: true }
-    );
-    modal.show();
-  </script>
-  {% endif %}
+<script>
+  var policyDetails = JSON.parse('{{ policy_detail | tojson}}')
+  if(policyDetails["Action"] == "*"){
+    $(":checkbox[name='actions']").attr('checked', true)
+  }
+  else{
+    policyDetails["Action"].forEach(item => $("#"+item).attr('checked', true))
+  }
+  $("input[name='policyName']").val(policyDetails["Sid"])
+
+  if(policyDetails["Principal"].hasOwnProperty("anonymous")){
+    $(":radio[value='Anonymous']").attr('checked', true)
+  }
+  else if(policyDetails["Principal"].hasOwnProperty("group") && policyDetails["Principal"].hasOwnProperty("user")){
+    $(":radio[value='Users']").attr('checked', true)
+    $("#userNames").val(policyDetails["Principal"]["user"])
+    $("#groupNames").val(policyDetails["Principal"]["group"])
+    $("div.userSelect").show();
+  }
+  else{
+    $(":radio[value='All']").attr('checked', true)
+  }
+  $("#"+policyDetails["Effect"]).attr('checked', true)
+  var modal = new bootstrap.Modal(
+    document.getElementById("policy-edit-content"),
+    { focus: true }
+  );
+  modal.show();
+</script>
+{% endif %}
+
 {% endblock %}
