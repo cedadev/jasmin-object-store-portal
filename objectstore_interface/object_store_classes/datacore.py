@@ -207,7 +207,7 @@ class DataCore(ObjectStore):
         response_dict = ast.literal_eval(response)
         return {"hasPolicy": True, "policy": response_dict["Statement"]}
     
-    async def create_policy(self, actions, groups, users, application, name, direction, bucket):
+    async def create_policy(self, actions, groups, users, application, name, direction, bucket, edit = False):
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
         url = "http://" + self.location
@@ -221,6 +221,12 @@ class DataCore(ObjectStore):
 
         bucket_policy_raw = jasmin_bucket.Policy().policy
         bucket_policy = ast.literal_eval(bucket_policy_raw)
+        
+        if edit != "false":
+             edit_num = ast.literal_eval(edit)
+
+             del bucket_policy["Statement"][edit_num]
+
         actionList = actions.split(',')
 
         policyArray = {
@@ -264,6 +270,7 @@ class DataCore(ObjectStore):
         bucket_policy_raw = jasmin_bucket.Policy().policy
         bucket_policy = ast.literal_eval(bucket_policy_raw)
         policy_num = ast.literal_eval(policy)
+        print(policy)
 
         del bucket_policy["Statement"][policy_num]
 
@@ -271,3 +278,21 @@ class DataCore(ObjectStore):
         jasmin_client.put_bucket_policy(Bucket=bucket, Policy=bucket_policy_str)
 
         return {"status_code": 200}
+    
+    async def get_individual_policy(self, bucket, pol_number):
+        with open("conf/common.secrets.yaml") as confile:
+            config = yaml.safe_load(confile)
+        url = "http://" + self.location
+        jasmin_bucket = await self._init_bucket_resource(bucket)
+        jasmin_client = boto3.client(
+            "s3", 
+            endpoint_url=url, 
+            aws_access_key_id= self.s3_auth_access_key,
+            aws_secret_access_key= config["s3"]["auth_secret"]
+        )
+
+        bucket_policy_raw = jasmin_bucket.Policy().policy
+        bucket_policy = ast.literal_eval(bucket_policy_raw)
+        policy_num = ast.literal_eval(pol_number)
+
+        return bucket_policy["Statement"][policy_num]

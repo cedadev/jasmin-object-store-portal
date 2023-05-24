@@ -27,7 +27,11 @@ policy.hasPolicy == false %}
         </td>
         {% endif %}
         <td>
-          <p>{% for user in policy.Action%} {{ user }} {% endfor %}</p>
+          {% if policy.Action.0 == "*"%}
+          <p>All actions</p>
+          {% else %}
+          <p class="text-wrap">{% for action in policy.Action%} {{ action }} <br>{% endfor %}</p>
+          {% endif %}
         </td>
         {%if policy.Principal.user|length > 0 or policy.Principal.group|length >
         0 %} {% if policy.Principal.user.0 == "*"%}
@@ -37,12 +41,12 @@ policy.hasPolicy == false %}
         {% else %}
         <td>
           {% if policy.Principal.user|length > 0 %}
-          <p>
-            {% for user in policy.Principal.user%} User: {{ user }} {% endfor %}
+          <p class="text-wrap">
+            {% for user in policy.Principal.user%} User: {{ user }} <br>{% endfor %}
           </p>
           {% endif %} {% if policy.Principal.group|length > 0%}
-          <p>
-            {% for group in policy.Principal.group%} Group: {{ group }} {%
+          <p class="text-wrap">
+            {% for group in policy.Principal.group%} Group: {{ group }} <br>{%
             endfor %}
           </p>
           {% endif %}
@@ -119,4 +123,46 @@ policy.hasPolicy == false %}
     {% endif %}
   </table>
 </div>
+
+  {% if edit == true %}
+  
+  <div class="banner banner-info modal" id="key-creation-content" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      <div class="modal-body">
+        {% include "bucket_pages/bucketform.html" %}
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    var policyDetails = JSON.parse('{{ policy_detail | tojson}}')
+    if(policyDetails["Action"] == "*"){
+      $(":checkbox[name='actions']").attr('checked', true)
+    }
+    else{
+      policyDetails["Action"].forEach(item => $("#"+item).attr('checked', true))
+    }
+    $("input[name='policyName']").val(policyDetails["Sid"])
+
+    if(policyDetails["Principal"].hasOwnProperty("anonymous")){
+      $(":radio[value='Anonymous']").attr('checked', true)
+    }
+    else if(policyDetails["Principal"].hasOwnProperty("group") && policyDetails["Principal"].hasOwnProperty("user")){
+      $(":radio[value='Users']").attr('checked', true)
+      $("#userNames").val(policyDetails["Principal"]["user"])
+      $("#groupNames").val(policyDetails["Principal"]["group"])
+      $("div.userSelect").show();
+    }
+    else{
+      $(":radio[value='All']").attr('checked', true)
+    }
+    $("#"+policyDetails["Effect"]).attr('checked', true)
+    var modal = new bootstrap.Modal(
+      document.getElementById("key-creation-content"),
+      { focus: true }
+    );
+    modal.show();
+  </script>
+  {% endif %}
 {% endblock %}

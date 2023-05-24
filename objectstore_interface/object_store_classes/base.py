@@ -29,6 +29,9 @@ class ObjectStore():
     async def delete_policy(self):
         pass
 
+    async def get_individual_policy(self):
+        pass
+
     def _return_error(self, response):
         return {"status_code": response.status_code, "error": f"{response.status_code}: {response.text}"} 
     
