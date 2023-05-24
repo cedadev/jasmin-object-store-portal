@@ -1,9 +1,22 @@
 {% extends "bucket_pages/bucketbase.html" %}{% block bucket_content %}
-
+<form class="form-group" method="POST" action="templates" id="bucket-policy-templates">
+  <legend>Templates</legend>
+  <select id="template" class="form-control" name="template">
+    <option value="read-only-all">Read-only access for Everyone</option>
+    <option value="read-only-users">Read-only access for Users</option>
+    <option value="full-access-users">Full access for Users</option>
+    <option value="uploads-no-login">Allow bucket uploads without login</option>
+    <option value="no-uploads-no-login">Prevent bucket uploads without login</option>
+    <option value="bucket-manage-users">Grant bucket management to Users</option>
+  </select>
+  <br>
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>
 <form class="form-group"
     method="POST"
     action=""
     id="bucket-policy-form">
+    <legend>Custom</legend>
   <fieldset>
     <label for="policyName" class="form-label">Policy Name</label>
     <input type="text" id="policyName" class="form-control" name="policyName">
