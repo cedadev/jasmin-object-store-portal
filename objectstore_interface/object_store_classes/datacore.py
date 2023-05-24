@@ -207,7 +207,7 @@ class DataCore(ObjectStore):
         response_dict = ast.literal_eval(response)
         return {"hasPolicy": True, "policy": response_dict["Statement"]}
     
-    async def create_policy(self, actions, groups, users, application, name, direction, bucket, edit = False):
+    async def create_policy(self, actions, groups, users, application, name, direction, bucket, edit = "false"):
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
         url = "http://" + self.location
@@ -228,7 +228,7 @@ class DataCore(ObjectStore):
              del bucket_policy["Statement"][edit_num]
 
         actionList = actions.split(',')
-        fullList = ['ListBucket', 'GetBucket', 'DeleteBucket', 'CopyBucket', 'GetBucketAcl', 'PutBucketAcl', 'GetBucketCORS', 'PutBucketCORS', 'GetBucketObjectLocking', 'PutBucketObjectLocking', 'GetObject', 'PutObject', 'DeleteObject', 'CreateObject', 'CopyObject', 'AppendObject', 'GetObjectAcl', 'PutObjectAcl', 'GetObjectRetention', 'PutObjectRetention', 'PutObjectLegalHold']
+        fullList = ['ListBucket', 'GetBucket', 'DeleteBucket', 'CopyBucket', 'GetBucketAcl', 'PutBucketAcl', 'GetBucketCORS', 'PutBucketCORS', 'GetBucketObjectLocking', 'PutBucketObjectLocking', 'GetObject', 'PutObject', 'DeleteObject', 'CreateObject', 'CopyObject', 'AppendObject', 'GetObjectAcl', 'PutObjectAcl', 'GetObjectRetention', 'PutObjectRetention', 'PutObjectLegalHold', 'BypassGovernanceRetention']
              
         policyArray = {
             "Sid": name,
