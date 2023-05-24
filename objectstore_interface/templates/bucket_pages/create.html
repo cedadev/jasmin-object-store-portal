@@ -3,24 +3,28 @@
 <form class="form-group"
     method="POST"
     action=""
-    id="bucket-policy-form"
-    onsubmit="formSubmit()">
+    id="bucket-policy-form">
   <fieldset>
     <label for="policyName" class="form-label">Policy Name</label>
     <input type="text" id="policyName" class="form-control" name="policyName">
+    <div class="invalid-feedback policy-name" style="display: none;"
+    >Name required</label>
   </fieldset>
-	<fieldset>
+	<fieldset class="action-group required">
 		<legend>Action</legend>
 		<div>
 			<input type="radio" id="Allow" name="direction" value="Allow" class="form-check-input">
-			<label for="Allow">Allow</label>
+			<label for="Allow" class="form-check-label">Allow</label>
 		</div>
 		<div>		
 			<input type="radio" id="Deny" name="direction" value="Deny" class="form-check-input">
-			<label for="Deny">Deny</label>
+			<label for="Deny" class="form-check-label">Deny</label>
 		</div>
+    <div class="invalid-feedback action-group" style="display: none;"
+    >Please select one</div
+  >
 	</fieldset>
-  <fieldset>
+  <fieldset class="apply-group required">
     <legend>Who do you want this policy to apply to?</legend>
     <div>
       <input
@@ -52,6 +56,7 @@
       />
       <label for="Anonymous" class="form-check-label">Anonymous</label>
     </div>
+    <div class="invalid-feedback apply-group" style="display: none;">Please select one</div>
   </fieldset>
   <div class="userSelect" style="display: none">
     <fieldset>
@@ -67,10 +72,13 @@
         >
         <input type="text" id="groupNames" class="form-control" name="groupNames"/>
       </div>
+      <div class="invalid-feedback user-group-names" style="display: none;"
+    >A user or group is required</div>
     </fieldset>
   </div>
-  <fieldset>
-    <legend>Policy Settings</legend>
+  <fieldset class="policy-settings required">
+    <legend id="policy-title">Policy Settings</legend>
+    <div class="invalid-feedback policy-settings" style="display: none;">Please select one</div>
     <table class="table margin-top-sm">
       <thead>
         <tr>
@@ -341,6 +349,9 @@
 </form>
 
 <script>
+  form = document.getElementById("bucket-policy-form")
+  form.addEventListener("submit", formSubmit)
+
   $(document).ready(function () {
     $('input[name="application"]').click(function () {
       var selection = $(this).val();
@@ -352,19 +363,85 @@
     });
   });
 
-  function formSubmit(){
+  function formSubmit(event) {
+    invalid = false
     var actionArray = $("input:checkbox[name=actions]:checked").map(function(){return $(this).attr("id")}).get()
-    console.log(actionArray)
+    //console.log(actionArray)
     document.getElementById("actionArray").value = actionArray
-
-    if(document.getElementById("userNames").value == ""){
-        document.getElementById("userNames").value = "null"
+    userNames = $('#userNames')
+    groupNames = $('#groupNames')
+    if($("#Users").is(":checked")){
+      if(groupNames.val() == "" && userNames.val() == ""){
+        groupNames.addClass("is-invalid")
+        userNames.addClass("is-invalid")
+        $('div.user-group-names.invalid-feedback').show()
+        invalid = true
+      }
+      else{
+        groupNames.removeClass("is-invalid")
+        userNames.removeClass("is-invalid")
+        $('div.user-group-names.invalid-feedback').hide()
+      }
     }
 
-    if(document.getElementById("groupNames").value == ""){
-        document.getElementById("groupNames").value = "null"
+    if(!$('fieldset.apply-group.required :radio:checked').length > 0){
+      console.log("Unchecked")
+      $('fieldset.apply-group.required :radio').addClass("is-invalid")
+      $('div.apply-group.invalid-feedback').show()
+      invalid = true
     }
-  }
+    else{
+      $('fieldset.action-group :radio').removeClass("is-invalid")
+      $('div.apply-group.invalid-feedback').hide()
+    }
+
+    if(!$('fieldset.action-group.required :radio:checked').length > 0){
+      console.log("Unchecked")
+      $('fieldset.action-group :radio').addClass("is-invalid")
+      $('div.action-group.invalid-feedback').show()
+      invalid = true
+    }
+    else{
+      $('fieldset.action-group :radio').removeClass("is-invalid")
+      $('div.action-group.invalid-feedback').show()
+    }
+
+    if($('#policyName').val() == ""){
+      $('#policyName').addClass("is-invalid")
+      $('div.policy-name.invalid-feedback').show()
+      invalid = true
+    }
+    else{
+      $('#policyName').removeClass("is-invalid")
+      $('div.policy-name.invalid-feedback').hide()
+    }
+
+    if(!$('fieldset.policy-settings.required :checkbox:checked').length > 0){
+      $('fieldset.policy-settings.required :checkbox').addClass("is-invalid")
+      $('#policy-title').addClass("text-danger")
+      $('div.policy-settings.invalid-feedback').show()
+      invalid = true
+    }
+    else{
+      $('fieldset.policy-settings.required :checkbox').removeClass("is-invalid")
+      $('div.policy-settings.invalid-feedback').hide()
+    }
+
+    if(invalid){
+      event.preventDefault()
+      return
+    }
+
+    if(userNames.val() == ""){
+      userNames.val("null")
+    }
+
+    if(groupNames.val() == ""){
+      groupNames.val("null")
+    }
+    
+      
+  };
 </script>
 
 {%endblock%}
