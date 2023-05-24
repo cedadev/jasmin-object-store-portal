@@ -39,7 +39,6 @@ async def delete_policy(request: Request, storename, bucket, policy: Annotated[s
             perm_list = await object_store.get_bucket_details(bucket)
 
             policy_details = await object_store.get_individual_policy(bucket, detail[1])
-            print(policy_details)
 
             return templates.TemplateResponse("bucket_pages/policies.html", {"request": request, "view": "view", "policy": perm_list, "storename": storename, "bucket": bucket, "edit": True, "edit_detail": detail[1], "policy_detail": policy_details})
     except Exception:

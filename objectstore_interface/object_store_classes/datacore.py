@@ -228,7 +228,8 @@ class DataCore(ObjectStore):
              del bucket_policy["Statement"][edit_num]
 
         actionList = actions.split(',')
-
+        fullList = ['ListBucket', 'GetBucket', 'DeleteBucket', 'CopyBucket', 'GetBucketAcl', 'PutBucketAcl', 'GetBucketCORS', 'PutBucketCORS', 'GetBucketObjectLocking', 'PutBucketObjectLocking', 'GetObject', 'PutObject', 'DeleteObject', 'CreateObject', 'CopyObject', 'AppendObject', 'GetObjectAcl', 'PutObjectAcl', 'GetObjectRetention', 'PutObjectRetention', 'PutObjectLegalHold']
+             
         policyArray = {
             "Sid": name,
             "Effect": direction,
@@ -236,7 +237,8 @@ class DataCore(ObjectStore):
             "Action": [],
             "Resource": "*"
         }
-        policyArray["Action"] = actionList
+        policyArray["Action"] = ["*"] if all(item in actionList for item in fullList) else actionList
+
         if groups == "null" and users == "null":
             policyArray["Principal"] = {"user":["*"]} if application == "All" else {"anonymous":["*"]}
         else:
