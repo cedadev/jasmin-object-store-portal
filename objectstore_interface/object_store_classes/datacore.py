@@ -7,6 +7,7 @@ from datetime import datetime
 import requests as r
 from requests.auth import HTTPBasicAuth
 from fastapi import Request
+from botocore.exceptions import ClientError
 
 from dateutil.relativedelta import relativedelta
 from .base import ObjectStore
@@ -218,8 +219,11 @@ class DataCore(ObjectStore):
             aws_access_key_id= self.s3_auth_access_key,
             aws_secret_access_key= config["s3"]["auth_secret"]
         )
+        try:
+            bucket_policy_raw = jasmin_bucket.Policy().policy
+        except ClientError:
+            bucket_policy_raw = f'{{"Version":"2008-10-17","Id":"{bucket} policy","Statement":[]}}'
 
-        bucket_policy_raw = jasmin_bucket.Policy().policy
         bucket_policy = ast.literal_eval(bucket_policy_raw)
         
         if edit != "false":
