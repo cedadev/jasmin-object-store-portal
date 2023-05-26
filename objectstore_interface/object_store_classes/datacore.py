@@ -272,7 +272,6 @@ class DataCore(ObjectStore):
         bucket_policy_raw = jasmin_bucket.Policy().policy
         bucket_policy = ast.literal_eval(bucket_policy_raw)
         policy_num = ast.literal_eval(policy)
-        print(policy)
 
         del bucket_policy["Statement"][policy_num]
 
@@ -282,16 +281,7 @@ class DataCore(ObjectStore):
         return {"status_code": 200}
     
     async def get_individual_policy(self, bucket, pol_number):
-        with open("conf/common.secrets.yaml") as confile:
-            config = yaml.safe_load(confile)
-        url = "http://" + self.location
         jasmin_bucket = await self._init_bucket_resource(bucket)
-        jasmin_client = boto3.client(
-            "s3", 
-            endpoint_url=url, 
-            aws_access_key_id= self.s3_auth_access_key,
-            aws_secret_access_key= config["s3"]["auth_secret"]
-        )
 
         bucket_policy_raw = jasmin_bucket.Policy().policy
         bucket_policy = ast.literal_eval(bucket_policy_raw)
