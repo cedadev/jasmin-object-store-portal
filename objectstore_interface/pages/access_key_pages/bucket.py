@@ -3,6 +3,7 @@ from objectstore_interface.object_store_classes.base import ObjectStore
 from objectstore_interface.object_store_classes.fromjson import storefromjson
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
@@ -12,8 +13,12 @@ router = APIRouter()
 async def view_buckets(request: Request, storename):
     try:
         object_store: ObjectStore = storefromjson(request.session[storename])
-
-        bucket_list = await object_store.get_buckets()
+        try:
+            bucket_list = await object_store.get_buckets()
+        except Exception:
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            request.session.clear()
+            return RedirectResponse("/login")
         return  templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
     except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
