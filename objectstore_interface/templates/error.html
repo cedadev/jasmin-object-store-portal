@@ -1,6 +1,22 @@
 {% extends "base.html" %}
 
 {% block content%}
-    <h1>Something went wrong</h1>
-    <p>{{ error }}</p>
+    <h1>Oops! Something went wrong</h1>
+    <a class="btn btn-primary mb-2" href="/">Go back home</a>
+    <a onclick="showAdvanced()" href="#" class="text-decoration-none" id="advanced-dropdown">Show full error<i class="fa fa-fw fa-caret-down"></i></a>
+    <p id="full-error" style="display: none;">{{ error }}</p>
+<script>
+    function showAdvanced(){
+        advanced = document.getElementById("full-error")
+        drop = document.getElementById("advanced-dropdown")
+        if (advanced.style.display == "none"){
+          advanced.style.display = "block"
+          drop.innerHTML = 'Hide full error<i class="fa fa-fw fa-caret-up"></i>'
+        }
+        else{
+          advanced.style.display = "none"
+          drop.innerHTML = 'Show full error<i class="fa fa-fw fa-caret-down"></i>'
+        }
+      }
+</script>
 {% endblock content %}
