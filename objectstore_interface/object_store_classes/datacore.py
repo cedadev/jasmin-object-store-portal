@@ -219,6 +219,11 @@ class DataCore(ObjectStore):
             aws_access_key_id= self.s3_auth_access_key,
             aws_secret_access_key= config["s3"]["auth_secret"]
         )
+        print(actions)
+        if application != "Users":
+            groups = None
+            users = None
+
         try:
             bucket_policy_raw = jasmin_bucket.Policy().policy
         except ClientError:
@@ -243,11 +248,11 @@ class DataCore(ObjectStore):
         }
         policyArray["Action"] = ["*"] if all(item in actionList for item in fullList) else actionList
 
-        if groups == "null" and users == "null":
+        if groups == None and users == None:
             policyArray["Principal"] = {"user":["*"]} if application == "All" else {"anonymous":["*"]}
         else:
-            groupList = groups.split(",") if groups != "null" else []
-            userList = users.split(",") if users != "null" else []
+            groupList = groups.split(",") if groups != None else []
+            userList = users.split(",") if users != None else []
 
             policyArray["Principal"] = {
                 "user": userList,

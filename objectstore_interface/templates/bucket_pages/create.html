@@ -2,17 +2,44 @@
 <form class="form-group" method="POST" action="templates" id="bucket-policy-templates">
   <legend>Templates</legend>
   <select id="template" class="form-control" name="template">
-    <option value="read-only-all">Read-only access for Everyone</option>
-    <option value="read-only-users">Read-only access for Users</option>
-    <option value="full-access-users">Full access for Users</option>
-    <option value="uploads-no-login">Allow bucket uploads without login</option>
-    <option value="no-uploads-no-login">Prevent bucket uploads without login</option>
-    <option value="bucket-manage-users">Grant bucket management to Users</option>
+    {% for template in templates %}
+    <option value="{{ template.name }}">{{ template.readable_name }}</option>
+    {% endfor %}
   </select>
   <br>
+  <div class="userSelect-template" style="display: none">
+    <fieldset>
+      <div>
+        <label for="userSelect" class="form-label"
+          >Users to apply policy to</label
+        >
+        <input type="text" id="userNames" class="form-control" name="userNames"/>
+      </div>
+      <div>
+        <label for="groupNames" class="form-label"
+          >Groups to apply policy to</label
+        >
+        <input type="text" id="groupNames" class="form-control" name="groupNames"/>
+      </div>
+      <div class="invalid-feedback user-group-names" style="display: none;"
+    >A user or group is required</div>
+    </fieldset>
+    <br>
+  </div>
   <button type="submit" class="btn btn-primary">Save</button>
 </form>
 
 {% include "bucket_pages/bucketform.html" %}
-
+<script>
+  $(document).ready(function () {
+    $('#template').change(function () {
+      var selection = $(this).val();
+      console.log(selection);
+      $("div.userSelect-template").hide();
+      if (selection == "bucket-group-access") {
+        $("div.userSelect-template").show();
+      }
+    });
+  });
+</script>
 {%endblock%}

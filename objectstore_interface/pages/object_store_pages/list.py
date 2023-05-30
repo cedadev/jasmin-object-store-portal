@@ -2,9 +2,11 @@ import jsonpickle, json
 import traceback, sys
 import logging
 from fastapi import APIRouter, Request
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from objectstore_interface.object_store_classes.datacore import DataCore
 from objectstore_interface.pages.login_pages import login
+from authlib.integrations.base_client.errors import OAuthError
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
@@ -13,7 +15,11 @@ router = APIRouter()
 @router.get("/object-store")
 async def object_store_list(request: Request):
       try:
-            services = await login.oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/services/", token=request.session["token"])
+            try:
+                  services = await login.oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/services/", token=request.session["token"])
+            except OAuthError:
+                  request.session.clear()
+                  return RedirectResponse("/login")
             services_json = services.json()
             # Only pull entire list when the user has just logged in or there is a change to the users access permissions.
             if request.session.get("user_stores") == None or services_json != request.session.get("services_json"):

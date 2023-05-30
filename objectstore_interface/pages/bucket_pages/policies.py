@@ -17,7 +17,7 @@ async def view_permissions(request: Request, storename, bucket):
         object_store: ObjectStore = storefromjson(request.session[storename])
 
         perm_list = await object_store.get_bucket_details(bucket)
-
+        print(perm_list)
         return templates.TemplateResponse("bucket_pages/policies.html", {"request": request, "view": "view", "policy": perm_list, "storename": storename, "bucket": bucket, "edit": False})
     except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
