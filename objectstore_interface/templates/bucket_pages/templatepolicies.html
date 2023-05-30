@@ -1,0 +1,11 @@
+<form class="form-group" method="POST" action="templates" id="bucket-policy-templates">
+    <legend>Templates</legend>
+    <select id="template" class="form-control" name="template">
+      {% for template in templates %}
+      <option value="{{ template.name }}">{{ template.readable_name }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <button type="submit" class="btn btn-primary">Save</button>
+  </form>
+  

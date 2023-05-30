@@ -15,7 +15,7 @@ router = APIRouter()
 @router.get("/object-store/{storename}/buckets/{bucket}/create")
 async def permissions_page(request: Request, storename, bucket):
     try:
-        template_list = [{"name": "read-only-all", "readable_name":"Read-only access for Everyone"}, {"name":"read-only-users", "readable_name":"Read-only access for Users"}, {"name": "full-access-users", "readable_name": "Full access for Users"},{"name": "uploads-no-login", "readable_name": "Allow bucket uploads without login"}, {"name": "no-uploads-no-login", "readable_name": "Prevent bucket uploads without login"}, {"name": "bucket-manage-users", "readable_name": "Grant bucket management to Users"}, {"name":"bucket-group-access", "readable_name": f"Grant access to specifc users or groups"}]
+        template_list = [{"name": "read-only-all", "readable_name":"Read-only access for Everyone"}, {"name":"read-only-users", "readable_name":"Read-only access for Users"}, {"name": "full-access-users", "readable_name": "Full access for Users"},{"name": "uploads-no-login", "readable_name": "Allow bucket uploads without login"}, {"name": "no-uploads-no-login", "readable_name": "Prevent bucket uploads without login"}, {"name": "bucket-manage-users", "readable_name": "Grant bucket management to Users"}]
         return templates.TemplateResponse("bucket_pages/create.html", {"request": request, "view": "create", "storename": storename, "bucket": bucket, "edit_detail": "false", "templates": template_list})
     except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -118,7 +118,7 @@ async def template_permissions(
                     actions="*",
                     groups= groupNames,
                     users= userNames,
-                    application="All",
+                    application="Users",
                     bucket=bucket,
                     name = "Grant bucket management to Users",
                     direction="Allow"

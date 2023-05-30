@@ -1,45 +1,76 @@
 {% extends "bucket_pages/bucketbase.html" %}{% block bucket_content %}
-<form class="form-group" method="POST" action="templates" id="bucket-policy-templates">
-  <legend>Templates</legend>
-  <select id="template" class="form-control" name="template">
-    {% for template in templates %}
-    <option value="{{ template.name }}">{{ template.readable_name }}</option>
-    {% endfor %}
-  </select>
-  <br>
-  <div class="userSelect-template" style="display: none">
+<form class="form-group" method="POST" action="templates" id="bucket-generic-policy">
+  <legend>Grant access to specific groups and users</legend><br>
+  <input type="hidden" name="template" value="bucket-group-access">
+  <div class="userSelect-template">
     <fieldset>
       <div>
-        <label for="userSelect" class="form-label"
-          >Users to apply policy to</label
+        <label for="genericUserNames" class="form-label"
+          >Users to grant access to</label
         >
-        <input type="text" id="userNames" class="form-control" name="userNames"/>
+        <input type="text" id="genericUserNames" class="form-control" name="userNames"/>
       </div>
       <div>
-        <label for="groupNames" class="form-label"
-          >Groups to apply policy to</label
+        <label for="genericGroupNames" class="form-label"
+          >Groups to grant access to</label
         >
-        <input type="text" id="groupNames" class="form-control" name="groupNames"/>
+        <input type="text" id="genericGroupNames" class="form-control" name="groupNames"/>
       </div>
-      <div class="invalid-feedback user-group-names" style="display: none;"
+      <div class="invalid-feedback user-group-names"
     >A user or group is required</div>
     </fieldset>
     <br>
   </div>
-  <button type="submit" class="btn btn-primary">Save</button>
+<button type="submit" class="btn btn-primary">Save</button>
 </form>
+<br>
+<a onclick="showAdvanced()" href="#" class="text-decoration-none" id="advanced-dropdown">Show advanced<i class="fa fa-fw fa-caret-down"></i></a>
+<div style="display: none;" id="advanced-policies">
+  {% include "bucket_pages/templatepolicies.html" %}
+  {% include "bucket_pages/bucketform.html" %}
+</div>
 
-{% include "bucket_pages/bucketform.html" %}
 <script>
-  $(document).ready(function () {
-    $('#template').change(function () {
-      var selection = $(this).val();
-      console.log(selection);
-      $("div.userSelect-template").hide();
-      if (selection == "bucket-group-access") {
-        $("div.userSelect-template").show();
-      }
-    });
-  });
+  templateForm = document.getElementById("bucket-generic-policy")
+  templateForm.addEventListener("submit", genericSubmit)
+
+  function genericSubmit(event) {
+    invalid = false
+    var actionArray = $("input:checkbox[name=actions]:checked").map(function(){return $(this).attr("id")}).get()
+    //console.log(actionArray)
+    document.getElementById("actionArray").value = actionArray
+    userNames = $('#genericUserNames')
+    groupNames = $('#genericGroupNames')
+
+    if(groupNames.val() == "" && userNames.val() == ""){
+      groupNames.addClass("is-invalid")
+      userNames.addClass("is-invalid")
+      $('div.user-group-names.invalid-feedback').show()
+      invalid = true
+    }
+    else{
+      groupNames.removeClass("is-invalid")
+      userNames.removeClass("is-invalid")
+      $('div.user-group-names.invalid-feedback').hide()
+    }
+
+    if(invalid){
+      event.preventDefault()
+      return
+    }
+  };
+
+  function showAdvanced(){
+    advanced = document.getElementById("advanced-policies")
+    drop = document.getElementById("advanced-dropdown")
+    if (advanced.style.display == "none"){
+      advanced.style.display = "block"
+      drop.innerHTML = 'Hide advanced<i class="fa fa-fw fa-caret-up"></i>'
+    }
+    else{
+      advanced.style.display = "none"
+      drop.innerHTML = 'Show advanced<i class="fa fa-fw fa-caret-down"></i>'
+    }
+  }
 </script>
 {%endblock%}
