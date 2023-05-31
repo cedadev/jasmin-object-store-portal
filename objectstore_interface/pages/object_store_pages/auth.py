@@ -16,9 +16,12 @@ router = APIRouter()
 @router.get("/object-store/{storename}")
 async def object_store_verify_password(request: Request, storename):
       try:
+            timeout = False
             if request.session.get('access_key_' + str(storename)) is not None:
-                  return RedirectResponse(f"/object-store/{storename}/access-keys")
-            return templates.TemplateResponse("object_store_pages/pass.html", {"request": request, "storename": storename, "wrong": "false"})
+                  if request.session.get('timeout') != "true":
+                        return RedirectResponse(f"/object-store/{storename}/access-keys")
+                  timeout = True
+            return templates.TemplateResponse("object_store_pages/pass.html", {"request": request, "storename": storename, "wrong": "false", "timeout": timeout})
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
@@ -36,6 +39,7 @@ async def object_store_get_key(request: Request, storename, password: Annotated[
             request.session['access_key_' + str(storename)] = response["access_key"]
             request.session['s3_access_key_' + str(storename)] = response["s3_access_key"]
             request.session[storename] = object_store.toJSON()
+            request.session.pop("timeout", None)
             return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()

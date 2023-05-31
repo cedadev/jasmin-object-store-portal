@@ -1,4 +1,9 @@
 {% extends "base.html" %} {% block content %}
+{% if timeout %}
+<div class="alert alert-warning" role="alert">
+  Your session has timed out, please re-enter your JASMIN password.
+</div>
+{% endif %}
 <h3>Please confirm your JASMIN password</h3>
 <div class="form-outline mb-4">
   <form action="/object-store/{{ storename }}" method="post">

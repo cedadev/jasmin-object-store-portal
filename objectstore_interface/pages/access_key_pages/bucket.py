@@ -16,9 +16,10 @@ async def view_buckets(request: Request, storename):
         try:
             bucket_list = await object_store.get_buckets()
         except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            request.session.clear()
-            return RedirectResponse("/login")
+            request.session["timeout"] = "true"
+            return RedirectResponse(f"/object-store/{storename}")
         return  templates.TemplateResponse("access_key_pages/buckets.html", {"request": request, "storename": storename, "view": "buckets", "buckets": bucket_list})
     except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
