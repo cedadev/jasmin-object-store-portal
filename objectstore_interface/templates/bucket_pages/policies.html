@@ -1,5 +1,10 @@
-{% extends "bucket_pages/bucketbase.html" %} {% block bucket_content %} {% if
-policy.hasPolicy == false %}
+{% extends "bucket_pages/bucketbase.html" %} {% block bucket_content %} 
+{% if invalid %}
+<div class="alert alert-warning" role="alert">
+  You do not have access to manage policies on this bucket
+</div>
+{% endif %}
+{% if policy.hasPolicy == false %}
 <h2>This store has no policies</h2>
 {% else %}
 <div class="table-responsive">
@@ -33,12 +38,21 @@ policy.hasPolicy == false %}
           <p class="text-wrap">{% for action in policy.Action%} {{ action }} <br>{% endfor %}</p>
           {% endif %}
         </td>
-        {%if policy.Principal.user|length > 0 or policy.Principal.group|length >
-        0 %} {% if policy.Principal.user.0 == "*"%}
+        <script>
+          console.log("{{policy.Principal}}")
+        </script>
+        {% if  policy.Principal == "*" %}
         <td>
           <p>All</p>
         </td>
-        {% else %}
+        {% elif policy.Principal.user|length > 0 or policy.Principal.group|length >
+        0 %} 
+       
+          {% if policy.Principal.user.0 == "*" %}
+          <td>
+            <p>All</p>
+          </td>
+          {% else %}
         <td>
           {% if policy.Principal.user|length > 0 %}
           <p class="text-wrap">
@@ -56,10 +70,12 @@ policy.hasPolicy == false %}
           <p>Anonymous Users</p>
         </td>
         {% elif policy.Principal.group|length > 0 %}
-        <p>
-          {% for group in policy.Principal.group%} Group: {{ group }} {% endfor
-          %}
-        </p>
+        <td>
+          <p>
+            {% for group in policy.Principal.group%} Group: {{ group }} {% endfor
+            %}
+          </p>
+        </td>
         {% endif %}
         <td style="padding-right: 0.6em">
           <form

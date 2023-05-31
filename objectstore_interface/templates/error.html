@@ -1,10 +1,19 @@
 {% extends "base.html" %}
 
 {% block content%}
-    <h1>Oops! Something went wrong</h1>
+<script>
+console.log("{{ message }}")
+</script>
+    
+    {% if message %}
+      <h1>{{message}}</h1>
+    {% else %}
+      <h1>Oops! Something went wrong</h1>
+    {% endif %}
     <a class="btn btn-primary mb-2" href="/">Go back home</a>
-    <a onclick="showAdvanced()" href="#" class="text-decoration-none" id="advanced-dropdown">Show full error<i class="fa fa-fw fa-caret-down"></i></a>
-    <p id="full-error" style="display: none;">{{ error }}</p>
+    {% if advanced is true %}
+      <a onclick="showAdvanced()" href="#" class="text-decoration-none" id="advanced-dropdown">Show full error<i class="fa fa-fw fa-caret-down"></i></a>
+      <p id="full-error" style="display: none;">{{ error }}</p>
 <script>
     function showAdvanced(){
         advanced = document.getElementById("full-error")
@@ -19,4 +28,5 @@
         }
       }
 </script>
+{% endif %}
 {% endblock content %}

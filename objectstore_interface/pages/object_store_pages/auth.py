@@ -21,16 +21,21 @@ async def object_store_verify_password(request: Request, storename):
                   if request.session.get('timeout') != "true":
                         return RedirectResponse(f"/object-store/{storename}/access-keys")
                   timeout = True
+                  request.session.pop("timeout")
             return templates.TemplateResponse("object_store_pages/pass.html", {"request": request, "storename": storename, "wrong": "false", "timeout": timeout})
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
 
 @router.post("/object-store/{storename}")
 async def object_store_get_key(request: Request, storename, password: Annotated[str, Form()]):
       try:
-            object_store: ObjectStore = storefromjson(request.session[storename])
+            try:
+                  object_store: ObjectStore = storefromjson(request.session[storename])
+            except KeyError:
+                  exc_type, exc_value, exc_traceback = sys.exc_info()
+                  return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "message": "This object store is inaccessible"})
             #jsonpickle.decode(request.session[storename])
             response = await object_store.get_access_key(password, request)
             if response["error"] is not None:
@@ -44,5 +49,5 @@ async def object_store_get_key(request: Request, storename, password: Annotated[
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
       

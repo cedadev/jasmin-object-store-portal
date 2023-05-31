@@ -39,7 +39,7 @@ def login_splash(request: Request):
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
 
 
 @router.route("/login/redirect")
@@ -52,7 +52,7 @@ async def login(request: Request) -> RedirectResponse:
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
 
 @router.route("/oauth2/redirect")
 async def email(request: Request) -> RedirectResponse:
@@ -63,7 +63,7 @@ async def email(request: Request) -> RedirectResponse:
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
 
 @router.get("/account/logout")
 async def logout(request: Request):
@@ -73,4 +73,4 @@ async def logout(request: Request):
       except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})

@@ -1,4 +1,9 @@
 {% extends "bucket_pages/bucketbase.html" %}{% block bucket_content %}
+{% if invalid %}
+<div class="alert alert-warning" role="alert">
+  You do not have access to manage policies on this bucket
+</div>
+{% endif %}
 <form class="form-group" method="POST" action="templates" id="bucket-generic-policy">
   <legend>Grant access to specific groups and users</legend><br>
   <input type="hidden" name="template" value="bucket-group-access">

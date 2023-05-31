@@ -5,6 +5,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import Annotated
+from botocore.exceptions import ClientError
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
@@ -16,11 +17,12 @@ router = APIRouter()
 async def permissions_page(request: Request, storename, bucket):
     try:
         template_list = [{"name": "read-only-all", "readable_name":"Read-only access for Everyone"}, {"name":"read-only-users", "readable_name":"Read-only access for Users"}, {"name": "full-access-users", "readable_name": "Full access for Users"},{"name": "uploads-no-login", "readable_name": "Allow bucket uploads without login"}, {"name": "no-uploads-no-login", "readable_name": "Prevent bucket uploads without login"}, {"name": "bucket-manage-users", "readable_name": "Grant bucket management to Users"}]
-        return templates.TemplateResponse("bucket_pages/create.html", {"request": request, "view": "create", "storename": storename, "bucket": bucket, "edit_detail": "false", "templates": template_list})
+        invalid = request.session.pop("invalid", False)
+        return templates.TemplateResponse("bucket_pages/create.html", {"request": request, "view": "create", "storename": storename, "bucket": bucket, "edit_detail": "false", "templates": template_list, "invalid": invalid})
     except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
 
 @router.post("/object-store/{storename}/buckets/{bucket}/create")
 async def create_permissions(
@@ -34,15 +36,18 @@ async def create_permissions(
                             userNames: Annotated[str, Form()] = None, 
                             groupNames: Annotated[str, Form()] = None
 ):
-    try:
+     try:
         object_store: ObjectStore = storefromjson(request.session[storename])
         response = await object_store.create_policy(actionArray, groupNames, userNames, application, policyName, direction, bucket, edit)
 
         return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303)
-    except Exception:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+     except ClientError:
+          request.session["invalid"] = True
+          return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/create", status_code=303)
+     except Exception:
+          exc_type, exc_value, exc_traceback = sys.exc_info()
+          logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+          return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
     
 @router.post("/object-store/{storename}/buckets/{bucket}/templates")
 async def template_permissions(
@@ -125,7 +130,10 @@ async def template_permissions(
                )
         
           return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303)
+     except ClientError:
+          request.session["invalid"] = True
+          return RedirectResponse(f"/object-store/{storename}/buckets/{bucket}/create", status_code=303)
      except Exception:
-          exc_type, exc_value, exc_traceback = sys.exc_info()
-          logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
-          return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback))})
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
+            return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "advanced": True})
