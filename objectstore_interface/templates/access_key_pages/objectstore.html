@@ -14,7 +14,7 @@
     {% if access_keys %}
     <tbody>
       {% for access_key in access_keys %} {% if access_key.expired %}
-      <tr class="bg-danger">
+      <tr class="table-danger">
         {% elif access_key.expiring %}
       </tr>
 
