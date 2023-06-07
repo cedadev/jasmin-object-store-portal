@@ -15,6 +15,7 @@ router = APIRouter()
 
 @router.get("/object-store/{storename}")
 async def object_store_verify_password(request: Request, storename):
+      """Checks that the access key exists, if not displays a login page"""
       try:
             timeout = False
             if request.session.get('access_key_' + str(storename)) is not None:
@@ -30,12 +31,13 @@ async def object_store_verify_password(request: Request, storename):
 
 @router.post("/object-store/{storename}")
 async def object_store_get_key(request: Request, storename, password: Annotated[str, Form()]):
+      """Gets the store access key and adds it to the session"""
       try:
             try:
                   object_store: ObjectStore = storefromjson(request.session[storename])
             except KeyError:
                   exc_type, exc_value, exc_traceback = sys.exc_info()
-                  return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "message": "This object store is inaccessible"})
+                  return templates.TemplateResponse("error.html", {"request": request, "error": "".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)), "message": "You do not have access to this store"})
             #jsonpickle.decode(request.session[storename])
             response = await object_store.get_access_key(password, request)
             if response["error"] is not None:

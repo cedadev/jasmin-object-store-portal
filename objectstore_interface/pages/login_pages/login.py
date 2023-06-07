@@ -34,6 +34,7 @@ router = APIRouter()
 
 @router.get("/login")
 def login_splash(request: Request):
+      """Displays the login page"""
       try:
             return templates.TemplateResponse("login_pages/login.html", {"request": request})
       except Exception:
@@ -44,6 +45,7 @@ def login_splash(request: Request):
 
 @router.route("/login/redirect")
 async def login(request: Request) -> RedirectResponse:
+      """Starts the authorisation process"""
       try:
             return await oauth.accounts.authorize_redirect(
                   request,
@@ -56,6 +58,7 @@ async def login(request: Request) -> RedirectResponse:
 
 @router.route("/oauth2/redirect")
 async def email(request: Request) -> RedirectResponse:
+      """Creates the token and adds it to the session"""
       try:
             request.session["token"] = await oauth.accounts.authorize_access_token(request)
             request.session["projects_token"] = await projects_portal.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
@@ -67,6 +70,7 @@ async def email(request: Request) -> RedirectResponse:
 
 @router.get("/account/logout")
 async def logout(request: Request):
+      """Clears the current session"""
       try:
             request.session.clear()
             return RedirectResponse("/login")

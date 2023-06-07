@@ -168,6 +168,7 @@ class DataCore(ObjectStore):
         return {"status_code": response.status_code, "access_key": response_text.split()[1], "secret_key": secret_key}
     
     async def _init_bucket_resource(self, bucket):
+        """Initialises a bucket resource"""
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
         
@@ -219,7 +220,6 @@ class DataCore(ObjectStore):
             aws_access_key_id= self.s3_auth_access_key,
             aws_secret_access_key= config["s3"]["auth_secret"]
         )
-        print(actions)
         if application != "Users":
             groups = None
             users = None

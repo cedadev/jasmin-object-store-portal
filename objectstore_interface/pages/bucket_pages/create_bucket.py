@@ -15,6 +15,10 @@ router = APIRouter()
 
 @router.get("/object-store/{storename}/buckets/{bucket}/create")
 async def permissions_page(request: Request, storename, bucket):
+    """Displays the create permissions page.
+     
+    Also includes a list of templates to make it easier to add new ones. In future these could also have the variables needed for creation in them.
+    """
     try:
         template_list = [{"name": "read-only-all", "readable_name":"Read-only access for Everyone"}, {"name":"read-only-users", "readable_name":"Read-only access for Users"}, {"name": "full-access-users", "readable_name": "Full access for Users"},{"name": "uploads-no-login", "readable_name": "Allow bucket uploads without login"}, {"name": "no-uploads-no-login", "readable_name": "Prevent bucket uploads without login"}, {"name": "bucket-manage-users", "readable_name": "Grant bucket management to Users"}]
         invalid = request.session.pop("invalid", False)
@@ -36,6 +40,7 @@ async def create_permissions(
                             userNames: Annotated[str, Form()] = None, 
                             groupNames: Annotated[str, Form()] = None
 ):
+     """Takes the response to the form and passes it to the create_policy function"""
      try:
         object_store: ObjectStore = storefromjson(request.session[storename])
         response = await object_store.create_policy(actionArray, groupNames, userNames, application, policyName, direction, bucket, edit)
@@ -57,6 +62,7 @@ async def template_permissions(
      userNames: Annotated[str, Form()] = None, 
      groupNames: Annotated[str, Form()] = None,
 ):
+     """Takes the response to the form and passes the correct information to the create_policy function."""
      try:
           object_store: ObjectStore = storefromjson(request.session[storename])
           if template == "read-only-all":

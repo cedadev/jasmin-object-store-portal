@@ -10,12 +10,36 @@ Built with fast-api.
    `curl -sSL https://install.python-poetry.org | python3 -`
 2. Install dependencies  
    `poetry install`
-3. Create a .env file in `objectstore_interface`
-4. Add your jasmin accounts portal `client_id` and `client_secret` as well as your `scope`
-5. Add your jasmin projects portal `client_id` and `client_secret` as well as your `scope`
+3. Install Redis. [Detailed documentation available on the redis website.](https://redis.io/docs/getting-started/installation/)
+4. Create the file `conf\common.secrets.yaml`
+5. Replace the placeholders in [Config structure](#config-structure)
 6. Run
 
 ```bash
-cd objectstore_interface/
-poetry run uvicorn main:app --reload
+poetry run uvicorn objectstore_interface.main:app --reload
 ```
+
+## Config structure
+The file `conf\common.secrets.yaml` should look something like this:
+```yaml
+accounts:
+  client_id: "client id"
+  client_secret: "client secret"
+  scope: " scope"
+  redirectUri: http://127.0.0.1:8000/oauth2/redirect
+
+projects:
+  client_id: "client id"
+  client_secret: "client secret"
+  scope: " scope"
+
+s3:
+  auth_secret: 'auth secret'
+
+redis:
+  url: 'redis://localhost'
+testing: false
+```
+
+## Add new dependencies
+To add new dependencies you need to first add them with poetry as normal, then to ensure that the docker build process will pick them up run `poetry export --without-hashes --format=requirements.txt --output=requirements.txt`.

@@ -14,6 +14,7 @@ router = APIRouter()
 
 @router.get("/object-store/{storename}/create-keys", tags=["create"])
 async def create_object_store_keys_page(request: Request, storename):
+      """This displays the form for creating keys"""
       try:
             auth_access_key = request.session.get('access_key_' + str(storename), None)
 
@@ -28,6 +29,10 @@ async def create_object_store_keys_page(request: Request, storename):
 
 @router.post("/object-store/{storename}/create-keys")
 async def create_object_store_keys(request: Request, storename, expires: Annotated[str, Form()], description: Annotated[str, Form()]):
+      """Takes data from the form and passes it to the objectstore object to create the key.
+      
+      Checks that the response is the correct status code and then creates a dictionary so that the page can display the secret and access keys for the user to save.
+      """
       try:
             object_store: ObjectStore = storefromjson(request.session[storename])
 

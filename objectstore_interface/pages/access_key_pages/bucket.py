@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.get("/object-store/{storename}/buckets")
 async def view_buckets(request: Request, storename):
+    """Displays the list of buckets"""
     try:
         object_store: ObjectStore = storefromjson(request.session[storename])
         try:

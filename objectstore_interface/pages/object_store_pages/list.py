@@ -14,6 +14,7 @@ router = APIRouter()
 
 @router.get("/object-store")
 async def object_store_list(request: Request):
+      """Gets list of services and figures out which ones are object stores. In future can be used to create different objects for diffent types of store."""
       try:
             try:
                   services = await login.oauth.accounts.get(f"https://accounts.jasmin.ac.uk/api/services/", token=request.session["token"])
@@ -28,7 +29,6 @@ async def object_store_list(request: Request):
                   user_stores = {}
                   for service in projects.json(): #Look at each project
                         for requirement in service["requirements"]: # Look at the requirements for each project
-                              logging.debug(requirement["resource"]["name"])
                               if requirement["resource"]["name"] == "Caringo Object Store HPOS": #See if they're using datacore (caringo) Add more for different object stores (Create class for them as well)
                                     if requirement["location"].split(".")[0] in services_json["object_store"].keys(): #Check user has access to this object store
                                           user_stores[requirement["location"].split(".")[0]] = {"name": requirement["location"].split(".")[0], "location": requirement["location"]}

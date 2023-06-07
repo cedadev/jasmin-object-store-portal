@@ -16,6 +16,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
 class RedirectWhenLoggedOut:
+    """When the session token is non-existent will redirect users to login before they can access the site."""
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
 

@@ -14,11 +14,11 @@ router = APIRouter()
 
 @router.get("/object-store/{storename}/buckets/{bucket}/policy")
 async def view_permissions(request: Request, storename, bucket):
+    """Displays the list of permissions"""
     try:
         object_store: ObjectStore = storefromjson(request.session[storename])
         try:
             perm_list = await object_store.get_bucket_details(bucket)
-            print(perm_list["policy"][0]["Principal"])
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error("".join(traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_traceback)))
@@ -33,6 +33,7 @@ async def view_permissions(request: Request, storename, bucket):
 
 @router.post("/object-store/{storename}/buckets/{bucket}/policy")
 async def delete_policy(request: Request, storename, bucket, policy: Annotated[str, Form()]):
+    """Calls the delete_policy function and then redirects to the GET version of this page."""
     try:
         object_store: ObjectStore = storefromjson(request.session[storename])
         detail = policy.split("_")

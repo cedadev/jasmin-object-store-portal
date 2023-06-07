@@ -3,6 +3,7 @@ from objectstore_interface.object_store_classes.datacore import DataCore
 from objectstore_interface.object_store_classes.base import ObjectStore
 
 def storefromjson(jstring):
+    """Creates store from json string using the type to decide which store to create."""
     json_info: dict = json.loads(jstring)
     if json_info["type"] == "Datacore":
         objectstore = DataCore(location=json_info["location"])
