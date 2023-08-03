@@ -1,64 +1,105 @@
-{% extends "access_key_pages/objectbase.html" %}
-
-{% block object_content %}
+{% extends "access_key_pages/objectbase.html" %} {% block object_content %}
 <div class="col-md-8 col-md-offset-2">
-    <form method="POST" action="" class="form-horizontal" id="object-store-form" onsubmit="loading()">
-        <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9 mb-3">
-                <div class="row mb-3">
-                    <label for="inputdesc" class="col-sm-2 col-form-label">Description</label>
-                    <div class="col-sm-10">
-                        <input type="text" required="true" maxlength="25" class="form-control" id="inputdesc" name="description">
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="inputdate" class="col-sm-2 col-form-label">Expires</label>
-                    <div class="col-sm-10">
-                        <input type="date" required="true" class="form-control" name="expires">
-                    </div>
-                </div>
-                <button name="submitted" type="submit" class="btn btn-primary" autocomplete="off" id="create-access-key-btn">Create Access Key</button>
-            </div>
+  <form
+    method="POST"
+    action=""
+    class="form-horizontal"
+    id="object-store-form"
+    onsubmit="loading()"
+  >
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9 mb-3">
+        <div class="row mb-3">
+          <label for="inputdesc" class="col-sm-2 col-form-label"
+            >Description</label
+          >
+          <div class="col-sm-10">
+            <input
+              type="text"
+              required="true"
+              maxlength="25"
+              class="form-control"
+              id="inputdesc"
+              name="description"
+            />
+          </div>
         </div>
-    </form>
+        <div class="row mb-3">
+          <label for="inputdate" class="col-sm-2 col-form-label">Expires</label>
+          <div class="col-sm-10">
+            <input
+              type="date"
+              required="true"
+              class="form-control"
+              name="expires"
+            />
+          </div>
+        </div>
+        <button
+          name="submitted"
+          type="submit"
+          class="btn btn-primary"
+          autocomplete="off"
+          id="create-access-key-btn"
+        >
+          Create Access Key
+        </button>
+      </div>
+    </div>
+  </form>
 </div>
 
+{% if created == true %} {# The HTML inside here is what will be rendered in the
+key created dialog #}
 
-{% if created == true %}
-{# The HTML inside here is what will be rendered in the key created dialog #}
-
-  <div class="banner banner-info modal" id="key-creation-content" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Successfully created Secret and Access Keys</h4>
-        </div>
-        <div class="modal-body">
-          <p><strong>Access Key: </strong><code>{{ request.session.created.access_key }}</code></p>
-          <p><strong>S3 Secret Key: </strong><code>{{ request.session.created.secret_key }}</code></p>
-          <p><strong class="text-danger">WARNING:</strong> Make sure you copy your <code>S3 Secret Key</code> and store it somewhere safe - you will not be able to see it again!</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-        </div>
+<div class="banner banner-info modal" id="key-creation-content" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Successfully created Secret and Access Keys</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          <strong>Access Key: </strong
+          ><code>{{ created_dict.access_key }}</code>
+        </p>
+        <p>
+          <strong>S3 Secret Key: </strong
+          ><code>{{ created_dict.secret_key }}</code>
+        </p>
+        <p>
+          <strong class="text-danger">WARNING:</strong> Make sure you copy your
+          <code>S3 Secret Key</code> and store it somewhere safe - you will not
+          be able to see it again!
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          OK
+        </button>
       </div>
     </div>
   </div>
+</div>
 
-    <script>
-        var modal = new bootstrap.Modal(document.getElementById("key-creation-content"), {focus: true})
-        modal.show()
-    </script>
-    <script>
-      function loading(){
-        button = document.getElementById("create-access-key-btn")
-        console.log(button)
-        button.innerHTML = `
+<script>
+  var modal = new bootstrap.Modal(
+    document.getElementById("key-creation-content"),
+    { focus: true }
+  );
+  modal.show();
+</script>
+{% endif %}
+
+<script>
+  function loading() {
+    button = document.getElementById("create-access-key-btn");
+    console.log(button);
+    button.innerHTML = `
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
         </span> Working
-        <span class="sr-only">Loading...</span>`
-      }
-    </script>  
-{% endif %}
+        <span class="sr-only">Loading...</span>`;
+  }
+</script>
 
 {% endblock %}

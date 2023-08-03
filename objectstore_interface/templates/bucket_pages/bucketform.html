@@ -1,0 +1,435 @@
+<form class="form-group"
+    method="POST"
+    action="create"
+    id="bucket-policy-form">
+    <legend>Custom</legend>
+  <fieldset>
+    <label for="policyName" class="form-label">Policy Name</label>
+    <input type="text" id="policyName" class="form-control" name="policyName">
+    <div class="invalid-feedback policy-name" style="display: none;"
+    >Name required</label>
+  </fieldset>
+	<fieldset class="action-group required">
+		<legend>Action</legend>
+		<div>
+			<input type="radio" id="Allow" name="direction" value="Allow" class="form-check-input">
+			<label for="Allow" class="form-check-label">Allow</label>
+		</div>
+		<div>		
+			<input type="radio" id="Deny" name="direction" value="Deny" class="form-check-input">
+			<label for="Deny" class="form-check-label">Deny</label>
+		</div>
+    <div class="invalid-feedback action-group" style="display: none;"
+    >Please select one</div
+  >
+	</fieldset>
+  <fieldset class="apply-group required">
+    <legend>Who do you want this policy to apply to?</legend>
+    <div>
+      <input
+        type="radio"
+        id="All"
+        name="application"
+        value="All"
+        class="form-check-input"
+      />
+      <label for="All" class="form-check-label">All</label>
+    </div>
+    <div>
+      <input
+        type="radio"
+        id="Users"
+        name="application"
+        value="Users"
+        class="form-check-input"
+      />
+      <label for="Users" class="form-check-label">Specific Users/Groups</label>
+    </div>
+    <div>
+      <input
+        type="radio"
+        id="Anonymous"
+        name="application"
+        value="Anonymous"
+        class="form-check-input"
+      />
+      <label for="Anonymous" class="form-check-label">Anonymous</label>
+    </div>
+    <div class="invalid-feedback apply-group" style="display: none;">Please select one</div>
+  </fieldset>
+  <div class="userSelect" style="display: none">
+    <fieldset>
+      <div>
+        <label for="userSelect" class="form-label"
+          >Users to apply policy to</label
+        >
+        <input type="text" id="userNames" class="form-control" name="userNames"/>
+      </div>
+      <div>
+        <label for="groupNames" class="form-label"
+          >Groups to apply policy to</label
+        >
+        <input type="text" id="groupNames" class="form-control" name="groupNames"/>
+      </div>
+      <div class="invalid-feedback user-group-names" style="display: none;"
+    >A user or group is required</div>
+    </fieldset>
+  </div>
+  <fieldset class="policy-settings required">
+    <legend id="policy-title">Policy Settings</legend>
+    <div class="invalid-feedback policy-settings" style="display: none;">Please select one</div>
+    <table class="table margin-top-sm">
+      <thead>
+        <tr>
+          <th>Bucket</th>
+          <th class="text-center">List</th>
+          <th class="text-center">Get</th>
+          <th class="text-center">Put</th>
+          <th class="text-center">Delete</th>
+          <th class="text-center">Copy</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>
+            <span> General </span>
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="ListBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="DeleteBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="CopyBucket"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td><span class="margin-left-lg">Bucket ACLs</span></td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucketAcl"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="PutBucketAcl"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">&nbsp;</td>
+        </tr>
+        <tr>
+          <td><span class="margin-left-lg">Bucket CORS</span></td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucketCORS"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="PutBucketCORS"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">&nbsp;</td>
+        </tr>
+        <tr>
+          <td><span class="margin-left-lg">Object Locking</span></td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="GetBucketObjectLocking"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">
+            <input
+              type="checkbox"
+              id="PutBucketObjectLocking"
+              name="actions"
+              class="form-check-input"
+            />
+          </td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">&nbsp;</td>
+        </tr>
+        </tbody>
+        </table>
+
+
+        <table class="table margin-top-sm">
+          <thead>
+            <tr>
+              <th>Object</th>
+              <th class="text-center">Get</th>
+              <th class="text-center">Put</th>
+              <th class="text-center">Delete</th>
+              <th class="text-center">Create</th>
+              <th class="text-center">Copy</th>
+              <th class="text-center">Append</th>
+              <th class="text-center">Bypass</th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>
+              <span> General </span>
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="GetObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="DeleteObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="CreateObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="CopyObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="AppendObject"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+          </tr>
+          <tr>
+            <td><span class="margin-left-lg">Object ACLs</span></td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="GetObjectAcl"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObjectAcl"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+          </tr>
+          <tr>
+            <td><span class="margin-left-lg">Object Retention</span></td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="GetObjectRetention"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObjectRetention"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="BypassGovernanceRetention"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><span class="margin-left-lg">Object Legal Hold</span></td>
+            <td class="text-center"></td>
+            <td class="text-center">
+              <input
+                type="checkbox"
+                id="PutObjectLegalHold"
+                name="actions"
+                class="form-check-input"
+              />
+            </td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+            <td class="text-center">&nbsp;</td>
+          </tr>
+        </table>
+      </tbody>
+    </table>
+  </fieldset>
+  <input value="None" id="actionArray" name="actionArray" type="hidden">
+  <input value="{{edit_detail}}" id="edit" name="edit" type="hidden">
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<script>
+    form = document.getElementById("bucket-policy-form")
+    form.addEventListener("submit", formSubmit)
+  
+    $(document).ready(function () {
+      $('input[name="application"]').click(function () {
+        var selection = $(this).val();
+        console.log(selection);
+        $("div.userSelect").hide();
+        if (selection == "Users") {
+          $("div.userSelect").show();
+        }
+      });
+    });
+  
+    function formSubmit(event) {
+      invalid = false
+      var actionArray = $("input:checkbox[name=actions]:checked").map(function(){return $(this).attr("id")}).get()
+      //console.log(actionArray)
+      document.getElementById("actionArray").value = actionArray
+      userNames = $('#userNames')
+      groupNames = $('#groupNames')
+      if($("#Users").is(":checked")){
+        if(groupNames.val() == "" && userNames.val() == ""){
+          groupNames.addClass("is-invalid")
+          userNames.addClass("is-invalid")
+          $('div.user-group-names.invalid-feedback').show()
+          invalid = true
+        }
+        else{
+          groupNames.removeClass("is-invalid")
+          userNames.removeClass("is-invalid")
+          $('div.user-group-names.invalid-feedback').hide()
+        }
+      }
+  
+      if(!$('fieldset.apply-group.required :radio:checked').length > 0){
+        console.log("Unchecked")
+        $('fieldset.apply-group.required :radio').addClass("is-invalid")
+        $('div.apply-group.invalid-feedback').show()
+        invalid = true
+      }
+      else{
+        $('fieldset.action-group :radio').removeClass("is-invalid")
+        $('div.apply-group.invalid-feedback').hide()
+      }
+  
+      if(!$('fieldset.action-group.required :radio:checked').length > 0){
+        console.log("Unchecked")
+        $('fieldset.action-group :radio').addClass("is-invalid")
+        $('div.action-group.invalid-feedback').show()
+        invalid = true
+      }
+      else{
+        $('fieldset.action-group :radio').removeClass("is-invalid")
+        $('div.action-group.invalid-feedback').hide()
+      }
+  
+      if($('#policyName').val() == ""){
+        $('#policyName').addClass("is-invalid")
+        $('div.policy-name.invalid-feedback').show()
+        invalid = true
+      }
+      else{
+        $('#policyName').removeClass("is-invalid")
+        $('div.policy-name.invalid-feedback').hide()
+      }
+  
+      if(!$('fieldset.policy-settings.required :checkbox:checked').length > 0){
+        $('fieldset.policy-settings.required :checkbox').addClass("is-invalid")
+        $('#policy-title').addClass("text-danger")
+        $('div.policy-settings.invalid-feedback').show()
+        invalid = true
+      }
+      else{
+        $('fieldset.policy-settings.required :checkbox').removeClass("is-invalid")
+        $('div.policy-settings.invalid-feedback').hide()
+      }
+  
+      if(invalid){
+        event.preventDefault()
+        return
+      }
+    };
+  </script>
