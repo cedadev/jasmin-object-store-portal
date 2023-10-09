@@ -96,12 +96,16 @@ class DataCore(ObjectStore):
     async def get_access_key(self, password, request: Request):
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
-        response = r.get(
-            f"http://{self.location}:81/.TOKEN/?format=json",
-            auth=HTTPBasicAuth(
-                request.session["token"]["userinfo"]["preferred_username"], password
-            ),
-        )  # Use users jasmin password to authenticate the first time.
+        try:
+            response = r.get(
+                f"http://{self.location}:81/.TOKEN/?format=json",
+                auth=HTTPBasicAuth(
+                    request.session["token"]["userinfo"]["preferred_username"], password
+                ),
+            )  # Use users jasmin password to authenticate the first time.
+        except KeyError as exc:
+            print(response)
+            raise exc
         if response.status_code != 200:
             return self._return_error(response)
         auth_access_keys = [
