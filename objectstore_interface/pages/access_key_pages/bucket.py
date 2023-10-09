@@ -20,11 +20,9 @@ async def view_buckets(request: Request, storename):
         object_store: ObjectStore = storefromjson(request.session[storename])
         try:
             bucket_list = await object_store.get_buckets()
-        except Exception:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            logging.error(
-                "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-            )
+        except Exception as exc:
+
+            logging.error("".join(traceback.format_exception(exc)))
             request.session["timeout"] = "true"
             return RedirectResponse(f"/object-store/{storename}")
         return templates.TemplateResponse(
@@ -36,18 +34,14 @@ async def view_buckets(request: Request, storename):
                 "buckets": bucket_list,
             },
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )

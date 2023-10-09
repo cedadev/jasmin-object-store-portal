@@ -205,7 +205,7 @@ class DataCore(ObjectStore):
         jasmin_bucket = await self._init_bucket_resource(bucket)
         try:
             response = jasmin_bucket.Policy().policy # Get the polivies
-        except Exception as e:
+        except Exception as exc as e:
              return {"hasPolicy": False, "policy": []} # If not policy exists return so the page can show info
         response_dict = json.loads(response)
         return {"hasPolicy": True, "policy": response_dict["Statement"]}

@@ -40,18 +40,14 @@ def login_splash(request: Request):
         return templates.TemplateResponse(
             "login_pages/login.html", {"request": request}
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -65,18 +61,14 @@ async def login(request: Request) -> RedirectResponse:
             request,
             config["accounts"]["redirectUri"],
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -91,18 +83,14 @@ async def email(request: Request) -> RedirectResponse:
             TOKEN_ENDPOINT, grant_type="client_credentials"
         )
         return RedirectResponse("/object-store")
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -114,18 +102,14 @@ async def logout(request: Request):
     try:
         request.session.clear()
         return RedirectResponse("/login")
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )

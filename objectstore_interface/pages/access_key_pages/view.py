@@ -51,18 +51,14 @@ async def object_store_show_details(request: Request, storename: str):
                 "view": "view",
             },
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -93,18 +89,14 @@ async def access_key_delete(
             return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
         else:
             return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )

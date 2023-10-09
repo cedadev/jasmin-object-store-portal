@@ -49,18 +49,14 @@ async def permissions_page(request: Request, storename, bucket):
                 "invalid": invalid,
             },
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -101,18 +97,14 @@ async def create_permissions(
         return RedirectResponse(
             f"/object-store/{storename}/buckets/{bucket}/create", status_code=303
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -209,18 +201,14 @@ async def template_permissions(
         return RedirectResponse(
             f"/object-store/{storename}/buckets/{bucket}/create", status_code=303
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )

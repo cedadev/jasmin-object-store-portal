@@ -19,11 +19,9 @@ async def view_permissions(request: Request, storename, bucket):
         object_store: ObjectStore = storefromjson(request.session[storename])
         try:
             perm_list = await object_store.get_bucket_details(bucket)
-        except Exception:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            logging.error(
-                "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-            )
+        except Exception as exc:
+
+            logging.error("".join(traceback.format_exception(exc)))
             request.session["timeout"] = "true"
             return RedirectResponse(f"/object-store/{storename}")
         invalid = request.session.pop("invalid", False)
@@ -39,18 +37,14 @@ async def view_permissions(request: Request, storename, bucket):
                 "invalid": invalid,
             },
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -95,18 +89,14 @@ async def delete_policy(
         return RedirectResponse(
             f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )

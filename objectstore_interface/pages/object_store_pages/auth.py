@@ -34,18 +34,14 @@ async def object_store_verify_password(request: Request, storename):
                 "timeout": timeout,
             },
         )
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
@@ -60,14 +56,12 @@ async def object_store_get_key(
         try:
             object_store: ObjectStore = storefromjson(request.session[storename])
         except KeyError:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+
             return templates.TemplateResponse(
                 "error.html",
                 {
                     "request": request,
-                    "error": "".join(
-                        traceback.format_exception(value=exc_value, tb=exc_traceback)
-                    ),
+                    "error": "".join(traceback.format_exception(exc)),
                     "message": "You do not have access to this store",
                 },
             )
@@ -84,18 +78,14 @@ async def object_store_get_key(
         request.session[storename] = object_store.toJSON()
         request.session.pop("timeout", None)
         return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
-    except Exception:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        logging.error(
-            "".join(traceback.format_exception(value=exc_value, tb=exc_traceback))
-        )
+    except Exception as exc:
+
+        logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
             {
                 "request": request,
-                "error": "".join(
-                    traceback.format_exception(value=exc_value, tb=exc_traceback)
-                ),
+                "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
         )
