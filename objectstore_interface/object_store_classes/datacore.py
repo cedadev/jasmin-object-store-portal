@@ -96,7 +96,6 @@ class DataCore(ObjectStore):
     async def get_access_key(self, password, request: Request):
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
-        print(request.session)
         response = r.get(
             f"http://{self.location}:81/.TOKEN/?format=json",
             auth=HTTPBasicAuth(
