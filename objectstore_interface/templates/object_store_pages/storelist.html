@@ -17,5 +17,7 @@ user_stores.items() %}
   </div>
 </div>
 {%endfor%} {% if user_stores|length == 0 %}
-<h2>Sorry, you have no Object Stores</h2>
+<p></p>
+<p>You don't have access to any object store tenancies.</p>
+<p>Apply for access <a href="https://accounts.jasmin.ac.uk/services/object_store/">here</a>.</p>
 {% endif %} {% endblock %}
