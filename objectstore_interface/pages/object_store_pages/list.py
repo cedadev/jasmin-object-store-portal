@@ -1,12 +1,15 @@
-import jsonpickle, json
-import traceback, sys
+import json
 import logging
+import sys
+import traceback
+
+import jsonpickle
+from authlib.integrations.base_client.errors import OAuthError
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from objectstore_interface.object_store_classes.datacore import DataCore
 from objectstore_interface.pages.login_pages import login
-from authlib.integrations.base_client.errors import OAuthError
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
@@ -35,6 +38,10 @@ async def object_store_list(request: Request):
                 f"https://projects.jasmin.ac.uk/api/services/",
                 headers={"Accept": "application/json"},
             )
+            try:
+                services_json["object_store"]
+            except KeyError:
+                services_json["object_store"] = []
             user_stores = {}
             for service in projects.json():  # Look at each project
                 for requirement in service[
@@ -43,7 +50,9 @@ async def object_store_list(request: Request):
                     if (
                         requirement["resource"]["name"] == "Caringo Object Store HPOS"
                     ):  # See if they're using datacore (caringo) Add more for different object stores (Create class for them as well)
-                        if (
+                        if not services_json["object_store"]:
+                            pass
+                        elif (
                             requirement["location"].split(".")[0]
                             in services_json["object_store"].keys()
                         ):  # Check user has access to this object store
@@ -63,6 +72,7 @@ async def object_store_list(request: Request):
             "object_store_pages/storelist.html",
             {"request": request, "user_stores": user_stores},
         )
+
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
