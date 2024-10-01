@@ -198,9 +198,7 @@ class DataCore(ObjectStore):
 
     async def create_key(self, description, expires):
         secret_key = "".join(
-            random.choices(
-                string.ascii_letters + string.digits + string.punctuation, k=64
-            )
+            random.choices(string.ascii_letters + string.digits, k=64)
         )  # Generate secret key
         headers = {
             "X-User-Secret-Key-Meta": secret_key,
