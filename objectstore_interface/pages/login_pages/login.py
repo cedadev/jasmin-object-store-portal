@@ -58,10 +58,11 @@ def login_splash(request: Request):
 async def login(request: Request) -> RedirectResponse:
     """Starts the authorisation process"""
     try:
-        return await oauth.accounts.authorize_redirect(
-            request,
-            config["accounts"]["redirectUri"],
+        redirect_uri = config["accounts"]["redirectUri"]
+        response = await oauth.accounts.authorize_redirect(
+            request, redirect_uri, prompt="login"
         )
+        return response
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
