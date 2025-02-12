@@ -28,6 +28,7 @@ projects_portal = AsyncOAuth2Client(
     config["projects"]["client_id"],
     config["projects"]["client_secret"],
     scope=config["projects"]["scope"],  # " ".join(SCOPES),
+    timeout=30,
 )
 
 router = APIRouter()
