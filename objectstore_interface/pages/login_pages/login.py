@@ -5,6 +5,7 @@ import yaml
 import logging, traceback, sys
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.httpx_client import AsyncOAuth2Client
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
@@ -59,12 +60,31 @@ async def login(request: Request) -> RedirectResponse:
     """Starts the authorisation process"""
     try:
         redirect_uri = config["accounts"]["redirectUri"]
+
+        if not redirect_uri:
+            raise ValueError("No redirect URI found in configuration")
+
         response = await oauth.accounts.authorize_redirect(
             request, redirect_uri, prompt="login"
         )
-        return response
-    except Exception as exc:
 
+        if not response or response.status_code != 307:
+            raise ValueError("Failed to redirect to authorisation endpoint")
+
+        return response
+
+    except ValueError as ve:
+        logging.error(f"Validation error : {str(ve)}")
+        return templates.TemplateResponse(
+            "error.html",
+            {
+                "request": request,
+                "message": "Authentication validation failed",
+                "error": str(ve),
+                "advanced": True,
+            },
+        )
+    except Exception as exc:
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
             "error.html",
@@ -76,15 +96,45 @@ async def login(request: Request) -> RedirectResponse:
         )
 
 
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplies=1, min=4, max=10),
+    reraise=True,
+)
+async def fetch_tokens(request: Request):
+    account_token = await oauth.accounts.authorizr_access_token(request)
+    projects_token = await projects_portal.fetch_token(
+        TOKEN_ENDPOINT, grant_type="client_credentials"
+    )
+
+    return account_token, projects_token
+
+
 @router.route("/oauth2/redirect")
 async def email(request: Request) -> RedirectResponse:
     """Creates the token and adds it to the session"""
     try:
-        request.session["token"] = await oauth.accounts.authorize_access_token(request)
-        request.session["projects_token"] = await projects_portal.fetch_token(
-            TOKEN_ENDPOINT, grant_type="client_credentials"
-        )
+        account_token, projects_token = await fetch_tokens(request)
+
+        if not request.url.query:
+            raise ValueError("No authorisation code received in redirect")
+
+        if not account_token or not projects_token:
+            raise ValueError("Failed to fetch tokens")
+
         return RedirectResponse("/object-store")
+
+    except ValueError as ve:
+        logging.error(f"Validation error: {str(ve)}")
+        return templates.TemplateResponse(
+            "error.html",
+            {
+                "request": request,
+                "message": "Authentication validation failed",
+                "error": str(ve),
+                "advanced": True,
+            },
+        )
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
