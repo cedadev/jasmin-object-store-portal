@@ -1,10 +1,16 @@
+import time
 import typing
 from fastapi.applications import Request
-from starlette.middleware.base import BaseHTTPMiddleware, DispatchFunction, RequestResponseEndpoint
+from starlette.middleware.base import (
+    BaseHTTPMiddleware,
+    DispatchFunction,
+    RequestResponseEndpoint,
+)
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from http import HTTPStatus
 import json
 from fastapi.templating import Jinja2Templates
+
 
 from starlette.requests import Request
 from starlette.responses import Response
@@ -15,8 +21,10 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
+
 class RedirectWhenLoggedOut:
     """When the session token is non-existent will redirect users to login before they can access the site."""
+
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
@@ -33,12 +41,31 @@ class RedirectWhenLoggedOut:
         else:
             await self.app(scope, recieve, send)
             return
-    
+
 
 class MockSessionMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, http_request: Request, call_next: RequestResponseEndpoint):
         if http_request.headers.get("token") is not None:
-             options = json.loads(http_request.headers["token"])
-             for k,v in options["options"].items():
+            options = json.loads(http_request.headers["token"])
+            for k, v in options["options"].items():
                 http_request.session[k] = v
         return await call_next(http_request)
+
+
+class SessionValidationMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, http_request: Request, call_next: RequestResponseEndpoint):
+        if (
+            "/login" not in http_request.url.path
+            and "/oauth2" not in http_request.url.path
+        ):
+            session = http_request.session
+            if not session or "token" not in session:
+                return RedirectResponse("/login/redirect")
+
+            token = session["token"]
+            if "expires_at" in token and token["expires_at"] < time.time():
+                http_request.session.clear()
+                return RedirectResponse("/login/redirect")
+
+        response = await call_next(http_request)
+        return response

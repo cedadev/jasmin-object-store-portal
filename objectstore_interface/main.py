@@ -13,6 +13,7 @@ from starsessions.stores.redis import RedisStore
 from objectstore_interface.custom_middleware import (
     MockSessionMiddleware,
     RedirectWhenLoggedOut,
+    SessionValidationMiddleware,
 )
 from objectstore_interface.pages.access_key_pages import bucket, create, view
 from objectstore_interface.pages.bucket_pages import create_bucket, policies
@@ -29,6 +30,7 @@ middleware = [
     Middleware(SessionMiddleware, store=session_store, lifetime=3600 * 24 * 14),
     Middleware(SessionAutoloadMiddleware),
     Middleware(RedirectWhenLoggedOut),
+    Middleware(SessionValidationMiddleware),
 ]
 
 if config["testing"] == True:
