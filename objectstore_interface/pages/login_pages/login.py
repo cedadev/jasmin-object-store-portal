@@ -68,7 +68,7 @@ async def login(request: Request) -> RedirectResponse:
             request, redirect_uri, prompt="login"
         )
 
-        if not response or response.status_code != 307:
+        if not response:
             raise ValueError("Failed to redirect to authorisation endpoint")
 
         return response
@@ -102,7 +102,7 @@ async def login(request: Request) -> RedirectResponse:
     reraise=True,
 )
 async def fetch_tokens(request: Request):
-    account_token = await oauth.accounts.authorizr_access_token(request)
+    account_token = await oauth.accounts.authorize_access_token(request)
     projects_token = await projects_portal.fetch_token(
         TOKEN_ENDPOINT, grant_type="client_credentials"
     )
@@ -111,7 +111,7 @@ async def fetch_tokens(request: Request):
 
 
 @router.route("/oauth2/redirect")
-async def email(request: Request) -> RedirectResponse:
+async def oauth2_callback(request: Request) -> RedirectResponse:
     """Creates the token and adds it to the session"""
     try:
         account_token, projects_token = await fetch_tokens(request)
@@ -121,6 +121,9 @@ async def email(request: Request) -> RedirectResponse:
 
         if not account_token or not projects_token:
             raise ValueError("Failed to fetch tokens")
+
+        request.session["token"] = account_token
+        request.session["projects_token"] = projects_token
 
         return RedirectResponse("/object-store")
 
