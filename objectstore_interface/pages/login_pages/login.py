@@ -98,7 +98,7 @@ async def login(request: Request) -> RedirectResponse:
 
 @retry(
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplies=1, min=4, max=10),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
     reraise=True,
 )
 async def fetch_tokens(request: Request):
