@@ -26,13 +26,15 @@ async def create_object_store_keys_page(request: Request, storename):
             return RedirectResponse(f"/object-store/{storename}")
 
         return templates.TemplateResponse(
+            request,
             "access_key_pages/keycreate.html",
-            {"request": request, "storename": storename, "view": "create"},
+            {"storename": storename, "view": "create"},
         )
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
                 "request": request,
@@ -59,8 +61,9 @@ async def create_object_store_keys(
         response = await object_store.create_key(description, expires)
         if response["status_code"] != 201:
             return templates.TemplateResponse(
+                request,
                 "error.html",
-                {"request": request, "error": response["error"]},
+                {"error": response["error"]},
                 status_code=500,
             )
         else:
@@ -71,9 +74,9 @@ async def create_object_store_keys(
             # request.session['created'] = created
         # time.sleep(0.5)
         return templates.TemplateResponse(
+            request,
             "access_key_pages/keycreate.html",
             {
-                "request": request,
                 "storename": storename,
                 "view": "create",
                 "created": True,
@@ -85,9 +88,9 @@ async def create_object_store_keys(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

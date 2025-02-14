@@ -26,6 +26,7 @@ async def view_buckets(request: Request, storename):
             request.session["timeout"] = "true"
             return RedirectResponse(f"/object-store/{storename}")
         return templates.TemplateResponse(
+            request,
             "access_key_pages/buckets.html",
             {
                 "request": request,
@@ -38,6 +39,7 @@ async def view_buckets(request: Request, storename):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
                 "request": request,

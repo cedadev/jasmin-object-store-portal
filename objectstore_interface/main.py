@@ -19,12 +19,15 @@ from objectstore_interface.pages.access_key_pages import bucket, create, view
 from objectstore_interface.pages.bucket_pages import create_bucket, policies
 from objectstore_interface.pages.login_pages import login
 from objectstore_interface.pages.object_store_pages import auth, list
+from redis.asyncio import Redis
+
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("conf/common.secrets.yaml") as confile:
     config = yaml.safe_load(confile)
 
-session_store = RedisStore(config["redis"]["url"])
+redis_client = Redis.from_url(config["redis"]["connection"])
+session_store = RedisStore(connection=redis_client)
 
 middleware = [
     Middleware(SessionMiddleware, store=session_store, lifetime=3600 * 24 * 14),
@@ -52,14 +55,15 @@ app.include_router(create_bucket.router)
 app.include_router(policies.router)
 
 
-@app.route("/")
-def root(request: Request):
+@app.get("/")
+async def root(request: Request):
     try:
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse(request, "index.html")
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
                 "request": request,

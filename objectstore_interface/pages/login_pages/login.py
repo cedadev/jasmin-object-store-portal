@@ -40,15 +40,16 @@ def login_splash(request: Request):
     """Displays the login page"""
     try:
         return templates.TemplateResponse(
-            "login_pages/login.html", {"request": request}
+            request,
+            "login_pages/login.html",
         )
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -76,9 +77,9 @@ async def login(request: Request) -> RedirectResponse:
     except ValueError as ve:
         logging.error(f"Validation error : {str(ve)}")
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "message": "Authentication validation failed",
                 "error": str(ve),
                 "advanced": True,
@@ -87,9 +88,9 @@ async def login(request: Request) -> RedirectResponse:
     except Exception as exc:
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -130,9 +131,9 @@ async def oauth2_callback(request: Request) -> RedirectResponse:
     except ValueError as ve:
         logging.error(f"Validation error: {str(ve)}")
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "message": "Authentication validation failed",
                 "error": str(ve),
                 "advanced": True,
@@ -142,9 +143,9 @@ async def oauth2_callback(request: Request) -> RedirectResponse:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -161,9 +162,9 @@ async def logout(request: Request):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

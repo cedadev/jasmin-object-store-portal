@@ -35,17 +35,17 @@ async def object_store_show_details(request: Request, storename: str):
 
         if response["status_code"] != 200:
             return templates.TemplateResponse(
+                request,
                 "error.html",
                 {
-                    "request": request,
                     "error": f"{response.status_code}: {response.text}",
                 },
             )
 
         return templates.TemplateResponse(
+            request,
             "access_key_pages/objectstore.html",
             {
-                "request": request,
                 "access_keys": response["access_keys"],
                 "storename": storename,
                 "view": "view",
@@ -55,9 +55,9 @@ async def object_store_show_details(request: Request, storename: str):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -82,7 +82,7 @@ async def access_key_delete(
                 return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
             if response["status_code"] != 200:
                 return templates.TemplateResponse(
-                    "error.html", {"request": request, "error": response["error"]}
+                    request, "error.html", {"error": response["error"]}
                 )
 
             time.sleep(1)  # Give object store server time to update
@@ -93,9 +93,9 @@ async def access_key_delete(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

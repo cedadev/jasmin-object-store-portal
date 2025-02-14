@@ -26,9 +26,9 @@ async def view_permissions(request: Request, storename, bucket):
             return RedirectResponse(f"/object-store/{storename}")
         invalid = request.session.pop("invalid", False)
         return templates.TemplateResponse(
+            request,
             "bucket_pages/policies.html",
             {
-                "request": request,
                 "view": "view",
                 "policy": perm_list,
                 "storename": storename,
@@ -41,9 +41,9 @@ async def view_permissions(request: Request, storename, bucket):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -72,9 +72,9 @@ async def delete_policy(
             policy_details = await object_store.get_individual_policy(bucket, detail[1])
 
             return templates.TemplateResponse(
+                request,
                 "bucket_pages/policies.html",
                 {
-                    "request": request,
                     "view": "view",
                     "policy": perm_list,
                     "storename": storename,
@@ -93,9 +93,9 @@ async def delete_policy(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

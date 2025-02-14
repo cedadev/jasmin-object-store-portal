@@ -76,17 +76,18 @@ async def object_store_list(request: Request):
         else:
             user_stores = request.session["user_stores"]
         return templates.TemplateResponse(
+            request,
             "object_store_pages/storelist.html",
-            {"request": request, "user_stores": user_stores},
+            {"user_stores": user_stores},
         )
 
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

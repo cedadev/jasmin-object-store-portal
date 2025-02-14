@@ -37,7 +37,7 @@ s3:
   auth_secret: 'auth secret'
 
 redis:
-  url: 'redis://localhost'
+  connection: 'redis://localhost'
 testing: false
 ```
 

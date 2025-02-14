@@ -26,9 +26,9 @@ async def object_store_verify_password(request: Request, storename):
             timeout = True
             request.session.pop("timeout")
         return templates.TemplateResponse(
+            request,
             "object_store_pages/pass.html",
             {
-                "request": request,
                 "storename": storename,
                 "wrong": "false",
                 "timeout": timeout,
@@ -38,9 +38,9 @@ async def object_store_verify_password(request: Request, storename):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -58,9 +58,9 @@ async def object_store_get_key(
         except KeyError:
 
             return templates.TemplateResponse(
+                request,
                 "error.html",
                 {
-                    "request": request,
                     "error": "".join(traceback.format_exception(exc)),
                     "message": "You do not have access to this store",
                 },
@@ -69,8 +69,9 @@ async def object_store_get_key(
         response = await object_store.get_access_key(password, request)
         if response["error"] is not None:
             return templates.TemplateResponse(
+                request,
                 "object_store_pages/pass.html",
-                {"request": request, "storename": storename, "wrong": "true"},
+                {"storename": storename, "wrong": "true"},
             )
 
         request.session["access_key_" + str(storename)] = response["access_key"]
@@ -82,9 +83,9 @@ async def object_store_get_key(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
