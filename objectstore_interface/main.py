@@ -20,27 +20,37 @@ from objectstore_interface.pages.bucket_pages import create_bucket, policies
 from objectstore_interface.pages.login_pages import login
 from objectstore_interface.pages.object_store_pages import auth, list
 from redis.asyncio import Redis
+from starsessions.stores.memory import InMemoryStore
 
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("conf/common.secrets.yaml") as confile:
     config = yaml.safe_load(confile)
 
-# Initialize Redis connection for session storage
-redis_client = Redis.from_url(config["redis"]["connection"])
-session_store = RedisStore(connection=redis_client)
+# Initialize storage for session data based on environment
+if config["testing"] == True:
+    session_store = InMemoryStore()
+else:
+    redis_client = Redis.from_url(config["redis"]["connection"])
+    session_store = RedisStore(connection=redis_client)
+
 
 # Configure middleware stack for the application
 middleware = [
     Middleware(SessionMiddleware, store=session_store, lifetime=3600 * 24 * 14),
     Middleware(SessionAutoloadMiddleware),
-    Middleware(RedirectWhenLoggedOut),
-    Middleware(SessionValidationMiddleware),
 ]
 
 # Add mock session middleware for testing environments
 if config["testing"] == True:
-    middleware.insert(1, Middleware(MockSessionMiddleware))
+    middleware.append(Middleware(MockSessionMiddleware))
+else:
+    middleware.extend(
+        [
+            Middleware(RedirectWhenLoggedOut),
+            Middleware(SessionValidationMiddleware),
+        ]
+    )
 
 app = FastAPI(middleware=middleware)
 
