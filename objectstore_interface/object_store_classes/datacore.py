@@ -26,6 +26,7 @@ class DataCore(ObjectStore):
         self.type = "Datacore"  # Set type so that the fromjson function can pick the correct class to generate
 
     async def get_store(self, request: Request, password: str = None) -> dict:
+        """Get the store details"""
         headers = {
             "Cookie": "token=" + self.auth_access_key,  # Set the request headers
         }
@@ -94,6 +95,8 @@ class DataCore(ObjectStore):
         return {"status_code": response.status_code, "access_keys": access_keys}
 
     async def get_access_key(self, password, request: Request):
+        """Get the access key for the store"""
+
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
         response = r.get(
@@ -181,6 +184,8 @@ class DataCore(ObjectStore):
         }
 
     async def delete_key(self, delete_access_key):
+        """Delete an access key"""
+
         url = f"http://{self.location}:81/.TOKEN/{delete_access_key}"  # Url is the token url with the access key id on the end
         headers = {
             "Cookie": "token=" + self.auth_access_key,
@@ -197,6 +202,8 @@ class DataCore(ObjectStore):
         return {"status_code": response.status_code, "error": None}
 
     async def create_key(self, description, expires):
+        """Create an access key"""
+
         secret_key = "".join(
             random.choices(string.ascii_letters + string.digits, k=64)
         )  # Generate secret key
@@ -226,6 +233,7 @@ class DataCore(ObjectStore):
 
     async def _init_bucket_resource(self, bucket):
         """Initialises a bucket resource"""
+
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
 
@@ -243,6 +251,8 @@ class DataCore(ObjectStore):
         return jasmin_bucket
 
     async def get_buckets(self):
+        """Get the list of buckets"""
+
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
         url = "http://" + self.location
@@ -258,6 +268,8 @@ class DataCore(ObjectStore):
         return response["Buckets"]
 
     async def get_bucket_details(self, bucket):
+        """Get the details of a bucket"""
+
         jasmin_bucket = await self._init_bucket_resource(bucket)
         try:
             response = jasmin_bucket.Policy().policy  # Get the polivies
@@ -272,6 +284,8 @@ class DataCore(ObjectStore):
     async def create_policy(
         self, actions, groups, users, application, name, direction, bucket, edit="false"
     ):
+        """Create a policy"""
+
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
         url = "http://" + self.location
@@ -363,6 +377,8 @@ class DataCore(ObjectStore):
         return {"status_code": 200}
 
     async def delete_policy(self, bucket, policy):
+        """Delete a policy"""
+
         with open("conf/common.secrets.yaml") as confile:
             config = yaml.safe_load(confile)
         url = "http://" + self.location
@@ -388,6 +404,8 @@ class DataCore(ObjectStore):
         return {"status_code": 200}
 
     async def get_individual_policy(self, bucket, pol_number):
+        """Get an individual policy"""
+
         jasmin_bucket = await self._init_bucket_resource(bucket)
 
         bucket_policy_raw = jasmin_bucket.Policy().policy

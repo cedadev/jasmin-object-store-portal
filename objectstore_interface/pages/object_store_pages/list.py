@@ -20,6 +20,7 @@ router = APIRouter()
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 async def get_projects():
+    """Retrieve user's projects and services from the JASMIN Projects Portal API."""
     return await login.projects_portal.get(
         f"https://projects.jasmin.ac.uk/api/services/",
         headers={"Accept": "application/json"},

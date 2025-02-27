@@ -44,6 +44,8 @@ class RedirectWhenLoggedOut:
 
 
 class MockSessionMiddleware(BaseHTTPMiddleware):
+    """Middleware that populates the session with values from the request headers. Used for testing purposes."""
+
     async def dispatch(self, http_request: Request, call_next: RequestResponseEndpoint):
         if http_request.headers.get("token") is not None:
             options = json.loads(http_request.headers["token"])
@@ -53,16 +55,21 @@ class MockSessionMiddleware(BaseHTTPMiddleware):
 
 
 class SessionValidationMiddleware(BaseHTTPMiddleware):
+    """Middleware that validates session tokens and redirects users to login if the token is invalid."""
+
     async def dispatch(self, http_request: Request, call_next: RequestResponseEndpoint):
+        # Skip validation for login and OAuth2 related paths
         if (
             "/login" not in http_request.url.path
             and "/oauth2" not in http_request.url.path
         ):
             session = http_request.session
+            # Redirect if no session or no token in session
             if not session or "token" not in session:
                 return RedirectResponse("/login/redirect")
 
             token = session["token"]
+            # Check if token has expired and clear the session if it has
             if "expires_at" in token and token["expires_at"] < time.time():
                 http_request.session.clear()
                 return RedirectResponse("/login/redirect")

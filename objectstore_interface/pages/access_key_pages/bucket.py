@@ -17,8 +17,10 @@ router = APIRouter()
 async def view_buckets(request: Request, storename):
     """Displays the list of buckets"""
     try:
+        # Retrieve the object store instance from the session
         object_store: ObjectStore = storefromjson(request.session[storename])
         try:
+            # Get the list of buckets
             bucket_list = await object_store.get_buckets()
         except Exception as exc:
 

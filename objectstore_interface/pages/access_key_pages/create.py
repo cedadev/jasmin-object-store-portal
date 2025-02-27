@@ -20,8 +20,10 @@ router = APIRouter()
 async def create_object_store_keys_page(request: Request, storename):
     """This displays the form for creating keys"""
     try:
+        # Retrieve the object store instance from the session
         auth_access_key = request.session.get("access_key_" + str(storename), None)
 
+        # If no access key is found, redirect to the authorisation page
         if not auth_access_key:
             return RedirectResponse(f"/object-store/{storename}")
 
@@ -56,8 +58,10 @@ async def create_object_store_keys(
     Checks that the response is the correct status code and then creates a dictionary so that the page can display the secret and access keys for the user to save.
     """
     try:
+        # Retrieve the object store instance from the session
         object_store: ObjectStore = storefromjson(request.session[storename])
 
+        # Create the key and check for errors
         response = await object_store.create_key(description, expires)
         if response["status_code"] != 201:
             return templates.TemplateResponse(

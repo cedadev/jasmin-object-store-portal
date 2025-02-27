@@ -26,9 +26,11 @@ templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("conf/common.secrets.yaml") as confile:
     config = yaml.safe_load(confile)
 
+# Initialize Redis connection for session storage
 redis_client = Redis.from_url(config["redis"]["connection"])
 session_store = RedisStore(connection=redis_client)
 
+# Configure middleware stack for the application
 middleware = [
     Middleware(SessionMiddleware, store=session_store, lifetime=3600 * 24 * 14),
     Middleware(SessionAutoloadMiddleware),
@@ -36,6 +38,7 @@ middleware = [
     Middleware(SessionValidationMiddleware),
 ]
 
+# Add mock session middleware for testing environments
 if config["testing"] == True:
     middleware.insert(1, Middleware(MockSessionMiddleware))
 
@@ -57,6 +60,7 @@ app.include_router(policies.router)
 
 @app.get("/")
 async def root(request: Request):
+    """Serve the application's home page or return an error page if an exception occurs."""
     try:
         return templates.TemplateResponse(request, "index.html")
     except Exception as exc:
