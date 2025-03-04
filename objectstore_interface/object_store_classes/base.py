@@ -76,5 +76,12 @@ class ObjectStore:
         }
 
     def toJSON(self):
-        """Converts the object store instance to a json string"""
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        """Convert object to JSON string representation."""
+        # Create a dictionary with all object attributes
+        obj_dict = self.__dict__.copy()
+
+        # Ensure critical attributes are included
+        if "type" not in obj_dict:
+            obj_dict["type"] = self.__class__.__name__
+
+        return json.dumps(obj_dict)

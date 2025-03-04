@@ -412,4 +412,8 @@ class DataCore(ObjectStore):
         bucket_policy = json.loads(bucket_policy_raw)
         policy_num = int(pol_number)
 
-        return bucket_policy["Statement"][policy_num]
+        # Check if index is valid before accessing the list
+        if 0 <= policy_num < len(bucket_policy["Statement"]):
+            return bucket_policy["Statement"][policy_num]
+        else:
+            return {}
