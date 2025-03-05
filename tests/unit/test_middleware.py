@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 from starsessions import SessionMiddleware, SessionAutoloadMiddleware
-import starsessions
 from starsessions.stores.memory import InMemoryStore
 from starlette.middleware.base import BaseHTTPMiddleware
 from objectstore_interface.custom_middleware import (

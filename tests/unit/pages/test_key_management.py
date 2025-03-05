@@ -1,6 +1,6 @@
 import pytest
 import json
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
 from fastapi.testclient import TestClient

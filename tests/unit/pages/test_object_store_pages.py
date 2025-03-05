@@ -1,6 +1,6 @@
 import json
 import pytest
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, patch
 
 from fastapi.responses import RedirectResponse
 from objectstore_interface.object_store_classes.datacore import DataCore

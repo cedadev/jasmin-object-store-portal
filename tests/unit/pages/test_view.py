@@ -172,7 +172,6 @@ class TestObjectStoreViewDetails:
 
         # Inspect the positional arguments passed to TemplateResponse
         call_args = mock_templates.TemplateResponse.call_args[0]
-        print(call_args)
 
         # First argument should be the template name
         assert "error.html" == call_args[1]

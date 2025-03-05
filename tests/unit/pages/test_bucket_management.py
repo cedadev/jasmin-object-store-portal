@@ -68,10 +68,11 @@ def mock_store():
     Returns:
         MagicMock: A configured mock of the ObjectStore class
     """
+
+    # Add commonly used methods to avoid repetition in tests
     mock_store = MagicMock()
     mock_store.get_buckets = AsyncMock()
     mock_store.create_policy = AsyncMock()
-    # Add commonly used methods to avoid repetition in tests
     mock_store.get_bucket_details = AsyncMock()
     mock_store.get_individual_policy = AsyncMock()
     mock_store.delete_policy = AsyncMock()

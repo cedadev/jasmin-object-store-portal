@@ -21,7 +21,6 @@ class TestFromJson:
 
         # Verify JSON string contains expected data
         json_data = json.loads(json_str)
-        print(json_data)
         assert json_data["location"] == "test-bucket.s3.example.com"
         assert json_data["auth_access_key"] == "test-key"
 
