@@ -64,7 +64,7 @@ async def object_store_get_key(
                 request,
                 "error.html",
                 {
-                    "error": "".join(traceback.format_exception(exc)),
+                    "error": f"You do not have access to the store {storename}",
                     "message": "You do not have access to this store",
                 },
             )
