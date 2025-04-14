@@ -38,9 +38,9 @@ async def permissions_page(request: Request, storename, bucket):
         ]
         invalid = request.session.pop("invalid", False)
         return templates.TemplateResponse(
+            request,
             "bucket_pages/create.html",
             {
-                "request": request,
                 "view": "create",
                 "storename": storename,
                 "bucket": bucket,
@@ -53,9 +53,9 @@ async def permissions_page(request: Request, storename, bucket):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -101,9 +101,9 @@ async def create_permissions(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -205,9 +205,9 @@ async def template_permissions(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

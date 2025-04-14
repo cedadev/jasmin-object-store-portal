@@ -20,14 +20,18 @@ async def object_store_show_details(request: Request, storename: str):
     It starts by clearing the created key so that the session is not storing the users secret key. If the page does not find an access key it redirects you to the authorisation page to generate one. Calls out to get the access key list and looks for error codes. Then return the page template.
     """
     try:
+        #  Retrieve the object store instance from the session
         object_store: ObjectStore = storefromjson(request.session[storename])
+        #  Check if the user has an access key for this store in their session
         auth_access_key = request.session.get("access_key_" + str(storename), None)
+        #  Clear the created key so that the session is not storing the users secret key
         if request.session.get("created"):
             request.session.pop("created")
-
+        #  If no access key is found, redirect to the authorisation page
         if not auth_access_key:
             return RedirectResponse(f"/object-store/{storename}")
 
+        #  Get the list of access keys for the store and check for errors
         response = await object_store.get_store(request)
         if response["status_code"] == 401:
             del request.session["access_key_" + str(storename)]
@@ -35,17 +39,17 @@ async def object_store_show_details(request: Request, storename: str):
 
         if response["status_code"] != 200:
             return templates.TemplateResponse(
+                request,
                 "error.html",
                 {
-                    "request": request,
                     "error": f"{response.status_code}: {response.text}",
                 },
             )
 
         return templates.TemplateResponse(
+            request,
             "access_key_pages/objectstore.html",
             {
-                "request": request,
                 "access_keys": response["access_keys"],
                 "storename": storename,
                 "view": "view",
@@ -55,9 +59,9 @@ async def object_store_show_details(request: Request, storename: str):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -82,7 +86,7 @@ async def access_key_delete(
                 return RedirectResponse(f"/object-store/{storename}/access-keys", 303)
             if response["status_code"] != 200:
                 return templates.TemplateResponse(
-                    "error.html", {"request": request, "error": response["error"]}
+                    request, "error.html", {"error": response["error"]}
                 )
 
             time.sleep(1)  # Give object store server time to update
@@ -93,9 +97,9 @@ async def access_key_delete(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

@@ -13,26 +13,44 @@ from starsessions.stores.redis import RedisStore
 from objectstore_interface.custom_middleware import (
     MockSessionMiddleware,
     RedirectWhenLoggedOut,
+    SessionValidationMiddleware,
 )
 from objectstore_interface.pages.access_key_pages import bucket, create, view
 from objectstore_interface.pages.bucket_pages import create_bucket, policies
 from objectstore_interface.pages.login_pages import login
 from objectstore_interface.pages.object_store_pages import auth, list
+from redis.asyncio import Redis
+from starsessions.stores.memory import InMemoryStore
+
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 with open("conf/common.secrets.yaml") as confile:
     config = yaml.safe_load(confile)
 
-session_store = RedisStore(config["redis"]["url"])
+# Initialize storage for session data based on environment
+if config["testing"] == True:
+    session_store = InMemoryStore()
+else:
+    redis_client = Redis.from_url(config["redis"]["connection"])
+    session_store = RedisStore(connection=redis_client)
 
+
+# Configure middleware stack for the application
 middleware = [
     Middleware(SessionMiddleware, store=session_store, lifetime=3600 * 24 * 14),
     Middleware(SessionAutoloadMiddleware),
-    Middleware(RedirectWhenLoggedOut),
 ]
 
+# Add mock session middleware for testing environments
 if config["testing"] == True:
-    middleware.insert(1, Middleware(MockSessionMiddleware))
+    middleware.append(Middleware(MockSessionMiddleware))
+else:
+    middleware.extend(
+        [
+            Middleware(RedirectWhenLoggedOut),
+            Middleware(SessionValidationMiddleware),
+        ]
+    )
 
 app = FastAPI(middleware=middleware)
 
@@ -50,14 +68,16 @@ app.include_router(create_bucket.router)
 app.include_router(policies.router)
 
 
-@app.route("/")
-def root(request: Request):
+@app.get("/")
+async def root(request: Request):
+    """Serve the application's home page or return an error page if an exception occurs."""
     try:
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse(request, "index.html")
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
                 "request": request,

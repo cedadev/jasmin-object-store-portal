@@ -16,19 +16,22 @@ router = APIRouter()
 async def view_permissions(request: Request, storename, bucket):
     """Displays the list of permissions"""
     try:
+        # Retrieve the object store instance from the session
         object_store: ObjectStore = storefromjson(request.session[storename])
         try:
+            # Get the list of permissions for the bucket
             perm_list = await object_store.get_bucket_details(bucket)
         except Exception as exc:
 
             logging.error("".join(traceback.format_exception(exc)))
             request.session["timeout"] = "true"
             return RedirectResponse(f"/object-store/{storename}")
+        # Check if the user has tried to access the page with invalid credentials
         invalid = request.session.pop("invalid", False)
         return templates.TemplateResponse(
+            request,
             "bucket_pages/policies.html",
             {
-                "request": request,
                 "view": "view",
                 "policy": perm_list,
                 "storename": storename,
@@ -41,9 +44,9 @@ async def view_permissions(request: Request, storename, bucket):
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },
@@ -56,14 +59,17 @@ async def delete_policy(
 ):
     """Calls the delete_policy function and then redirects to the GET version of this page."""
     try:
+        # Retrieve the object store instance from the session
         object_store: ObjectStore = storefromjson(request.session[storename])
         detail = policy.split("_")
+        # Handle delete policy request
         if detail[0] == "delete":
             response = await object_store.delete_policy(bucket, detail[1])
 
             return RedirectResponse(
                 f"/object-store/{storename}/buckets/{bucket}/policy", status_code=303
             )
+        # Handle edit policy request
         if detail[0] == "edit":
             detail = policy.split("_")
 
@@ -72,9 +78,9 @@ async def delete_policy(
             policy_details = await object_store.get_individual_policy(bucket, detail[1])
 
             return templates.TemplateResponse(
+                request,
                 "bucket_pages/policies.html",
                 {
-                    "request": request,
                     "view": "view",
                     "policy": perm_list,
                     "storename": storename,
@@ -93,9 +99,9 @@ async def delete_policy(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

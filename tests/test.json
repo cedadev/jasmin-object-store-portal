@@ -5,7 +5,7 @@
   "scope": "openid https://accounts.jasmin.ac.uk/api/services/",
   "refresh_token": "testing",
   "id_token": "testing",
-  "expires_at": 1681335829,
+  "expires_at": 19999999999,
   "userinfo": {
     "aud": "testing",
     "iat": "testing",
@@ -18,8 +18,8 @@
     "preferred_username": "test",
     "email": null,
     "iss": "https://accounts.jasmin.ac.uk",
-    "exp": 1681335826,
-    "auth_time": 1680522173,
+    "exp": 19999999999,
+    "auth_time": 19999999999,
     "jti": "17501146-4b82-447a-8fab-80148045f97d"
   },
   "access_key_cedadev-o": "test"

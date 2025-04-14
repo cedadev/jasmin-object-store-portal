@@ -10,10 +10,21 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from objectstore_interface.object_store_classes.datacore import DataCore
 from objectstore_interface.pages.login_pages import login
+from tenacity import retry, stop_after_attempt, wait_exponential
+
 
 templates = Jinja2Templates(directory="objectstore_interface/templates")
 
 router = APIRouter()
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+async def get_projects():
+    """Retrieve user's projects and services from the JASMIN Projects Portal API."""
+    return await login.projects_portal.get(
+        f"https://projects.jasmin.ac.uk/api/services/",
+        headers={"Accept": "application/json"},
+    )
 
 
 @router.get("/object-store")
@@ -34,10 +45,7 @@ async def object_store_list(request: Request):
             "user_stores"
         ) == None or services_json != request.session.get("services_json"):
             await login.projects_portal.fetch_token(login.TOKEN_ENDPOINT)
-            projects = await login.projects_portal.get(
-                f"https://projects.jasmin.ac.uk/api/services/",
-                headers={"Accept": "application/json"},
-            )
+            projects = await get_projects()
             try:
                 services_json["object_store"]
             except KeyError:
@@ -60,26 +68,27 @@ async def object_store_list(request: Request):
                                 "name": requirement["location"].split(".")[0],
                                 "location": requirement["location"],
                             }
-                            request.session[
-                                requirement["location"].split(".")[0]
-                            ] = DataCore(requirement["location"]).toJSON()
+                            request.session[requirement["location"].split(".")[0]] = (
+                                DataCore(requirement["location"]).toJSON()
+                            )
 
             request.session["user_stores"] = user_stores
             request.session["services_json"] = services_json
         else:
             user_stores = request.session["user_stores"]
         return templates.TemplateResponse(
+            request,
             "object_store_pages/storelist.html",
-            {"request": request, "user_stores": user_stores},
+            {"user_stores": user_stores},
         )
 
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

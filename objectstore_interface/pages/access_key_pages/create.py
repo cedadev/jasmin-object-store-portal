@@ -20,19 +20,23 @@ router = APIRouter()
 async def create_object_store_keys_page(request: Request, storename):
     """This displays the form for creating keys"""
     try:
+        # Retrieve the object store instance from the session
         auth_access_key = request.session.get("access_key_" + str(storename), None)
 
+        # If no access key is found, redirect to the authorisation page
         if not auth_access_key:
             return RedirectResponse(f"/object-store/{storename}")
 
         return templates.TemplateResponse(
+            request,
             "access_key_pages/keycreate.html",
-            {"request": request, "storename": storename, "view": "create"},
+            {"storename": storename, "view": "create"},
         )
     except Exception as exc:
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
                 "request": request,
@@ -54,13 +58,16 @@ async def create_object_store_keys(
     Checks that the response is the correct status code and then creates a dictionary so that the page can display the secret and access keys for the user to save.
     """
     try:
+        # Retrieve the object store instance from the session
         object_store: ObjectStore = storefromjson(request.session[storename])
 
+        # Create the key and check for errors
         response = await object_store.create_key(description, expires)
         if response["status_code"] != 201:
             return templates.TemplateResponse(
+                request,
                 "error.html",
-                {"request": request, "error": response["error"]},
+                {"error": response["error"]},
                 status_code=500,
             )
         else:
@@ -71,9 +78,9 @@ async def create_object_store_keys(
             # request.session['created'] = created
         # time.sleep(0.5)
         return templates.TemplateResponse(
+            request,
             "access_key_pages/keycreate.html",
             {
-                "request": request,
                 "storename": storename,
                 "view": "create",
                 "created": True,
@@ -85,9 +92,9 @@ async def create_object_store_keys(
 
         logging.error("".join(traceback.format_exception(exc)))
         return templates.TemplateResponse(
+            request,
             "error.html",
             {
-                "request": request,
                 "error": "".join(traceback.format_exception(exc)),
                 "advanced": True,
             },

@@ -1,13 +1,14 @@
 import json
 
-class ObjectStore():
+
+class ObjectStore:
     def __init__(self, name, location) -> None:
         self.name = name
         self.location = location
 
     async def get_store(self) -> dict:
         """Get a specific object store
-        
+
         Returns the access keys in a dictionary.
         """
         pass
@@ -15,11 +16,11 @@ class ObjectStore():
     async def get_buckets(self):
         """Gets an s3 list of buckets"""
         pass
-    
+
     async def get_bucket_details(self, bucket):
         """Gets the list of s3 policies in buckets"""
         pass
-    
+
     async def get_access_key(self):
         """Gets or creates the access key used to authenticate with the store.
         This avoids the program needing to store the users password. Also creates
@@ -29,7 +30,7 @@ class ObjectStore():
 
     async def create_key(self):
         """Creates a key based on the Users parameters.
-        These parameters will typically be provided via a 
+        These parameters will typically be provided via a
         form post request.
 
         Arguments:
@@ -39,7 +40,7 @@ class ObjectStore():
         pass
 
     async def delete_key(self):
-        """ Delete the key requested by the user.
+        """Delete the key requested by the user.
         Simple delete request to the object store.
         """
         pass
@@ -68,8 +69,19 @@ class ObjectStore():
         pass
 
     def _return_error(self, response):
-        return {"status_code": response.status_code, "error": f"{response.status_code}: {response.text}"} 
-    
+        """Returns an error message if the response is not 200"""
+        return {
+            "status_code": response.status_code,
+            "error": f"{response.status_code}: {response.text}",
+        }
+
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
+        """Convert object to JSON string representation."""
+        # Create a dictionary with all object attributes
+        obj_dict = self.__dict__.copy()
+
+        # Ensure critical attributes are included
+        if "type" not in obj_dict:
+            obj_dict["type"] = self.__class__.__name__
+
+        return json.dumps(obj_dict)

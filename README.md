@@ -37,9 +37,14 @@ s3:
   auth_secret: 'auth secret'
 
 redis:
-  url: 'redis://localhost'
+  connection: 'redis://localhost'
 testing: false
 ```
+
+## Testing
+1. `poetry install`
+2. `poetry run pytest --cov`
+
 
 ## Add new dependencies
 To add new dependencies you need to first add them with poetry as normal, then to ensure that the docker build process will pick them up run `poetry export --without-hashes --format=requirements.txt --output=requirements.txt`.
